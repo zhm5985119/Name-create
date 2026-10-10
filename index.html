@@ -1,0 +1,1986 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#edf1ee">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="诗词起名">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" href="icon-192.png">
+<script>window.NAMER_STANDALONE = true;</script>
+<title>诗词八字起名</title>
+<style>
+/* 布局：左侧填写测算条件；右侧是按步骤展开的测算报告（排盘 → 旺衰 → 喜用 → 笔画 → 选字 → 候选名）。青瓷底色，朱砂只用在评分印章上。 */
+:root {
+  --paper: #edf1ee;
+  --surface: #f9fbf9;
+  --sunk: #e3e9e5;
+  --ink: #1d2a2e;
+  --ink-2: #55666a;
+  --line: #cbd6d0;
+  --celadon: #3f7466;
+  --celadon-soft: #d6e6df;
+  --seal: #b03a2c;
+  --mark: #f3dfae;
+  --w-mu: #3f8a52; --w-huo: #c4533a; --w-tu: #a07a32; --w-jin: #7f7a6a; --w-shui: #2f6a9c;
+  --good: #2f7a4a; --warn: #b5651d; --bad: #b03a2c;
+  --serif: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif;
+  --sans: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", system-ui, sans-serif;
+  --r: 10px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: #121819; --surface: #1a2224; --sunk: #222c2e; --ink: #e2e9e6; --ink-2: #9aaaa7; --line: #2f3c3e;
+    --celadon: #86b8a8; --celadon-soft: #23393a; --seal: #e2705f; --mark: #5a4a22;
+    --w-mu: #74bd85; --w-huo: #e9826a; --w-tu: #d0a75a; --w-jin: #b3ad9b; --w-shui: #6fa6d6;
+    --good: #6cc08a; --warn: #e0a05a; --bad: #e2705f;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --paper: #121819; --surface: #1a2224; --sunk: #222c2e; --ink: #e2e9e6; --ink-2: #9aaaa7; --line: #2f3c3e;
+  --celadon: #86b8a8; --celadon-soft: #23393a; --seal: #e2705f; --mark: #5a4a22;
+  --w-mu: #74bd85; --w-huo: #e9826a; --w-tu: #d0a75a; --w-jin: #b3ad9b; --w-shui: #6fa6d6;
+  --good: #6cc08a; --warn: #e0a05a; --bad: #e2705f;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--paper); color: var(--ink); font-family: var(--sans); font-size: 15px; line-height: 1.6; padding-inline: 16px; padding-block: 0 48px; }
+button, input, select { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--celadon); outline-offset: 2px; }
+.wrap { max-width: 1240px; margin: 0 auto; }
+
+header.top { display: flex; flex-wrap: wrap; align-items: center; gap: 12px 28px; padding-block: 20px 14px; border-bottom: 1px solid var(--line); }
+.brand { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.brand h1 { font-family: var(--serif); font-size: 24px; font-weight: 700; margin: 0; letter-spacing: .08em; }
+.brand span { color: var(--ink-2); font-size: 13px; }
+nav.tabs { display: flex; gap: 4px; flex-wrap: wrap; }
+nav.tabs button { border: 0; background: none; padding: 6px 12px; border-radius: 999px; cursor: pointer; color: var(--ink-2); }
+nav.tabs button[aria-selected="true"] { background: var(--ink); color: var(--paper); }
+
+.layout { display: grid; grid-template-columns: 320px minmax(0, 1fr); gap: 28px; padding-top: 22px; align-items: start; }
+@media (max-width: 900px) { .layout { grid-template-columns: minmax(0, 1fr); } }
+
+aside.settings { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px; display: grid; gap: 15px; position: sticky; top: calc(env(safe-area-inset-top, 0px) + 12px); max-height: calc(100vh - 24px); overflow: auto; }
+@media (max-width: 900px) { aside.settings { position: static; max-height: none; } }
+.stoggle { display: none; }
+@media (max-width: 900px) {
+  .stoggle { display: flex; align-items: center; gap: 10px; width: 100%; border: 0; background: none; padding: 0; text-align: left; cursor: pointer; }
+  .stoggle .sum { flex: 1; min-width: 0; font-size: 14px; }
+  .stoggle .sum b { font-family: var(--serif); font-size: 16px; margin-right: 6px; }
+  .stoggle .sum span { color: var(--ink-2); }
+  .stoggle .chev { flex: none; font-size: 13px; color: var(--celadon); border: 1px solid var(--line); border-radius: 999px; padding: 3px 12px; white-space: nowrap; }
+  aside.settings.collapsed { padding-block: 12px; }
+  aside.settings.collapsed > :not(.stoggle) { display: none; }
+}
+.field { display: grid; gap: 6px; }
+.field > label, .field > .lbl { font-size: 12px; color: var(--ink-2); letter-spacing: .06em; }
+.row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+input[type=text], input[type=date], input[type=time], select { background: var(--paper); border: 1px solid var(--line); border-radius: 8px; padding: 7px 10px; min-width: 0; }
+input[type=text], select.full { width: 100%; }
+.seg { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+.seg button { flex: 1; border: 0; background: var(--paper); padding: 6px 8px; cursor: pointer; }
+.seg button + button { border-left: 1px solid var(--line); }
+.seg button[aria-pressed="true"] { background: var(--celadon); color: var(--surface); }
+.chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.chip { border: 1px solid var(--line); background: var(--paper); border-radius: 999px; padding: 3px 11px; cursor: pointer; font-size: 13px; }
+.chip[aria-pressed="true"] { background: var(--celadon-soft); border-color: var(--celadon); color: var(--ink); }
+.theme-bar { display: flex; gap: 8px 10px; align-items: center; flex-wrap: wrap; margin: 4px 0 16px; }
+.theme-bar small { opacity: .6; font-size: 11px; }
+.check { display: flex; gap: 8px; align-items: center; font-size: 14px; cursor: pointer; }
+.check input { accent-color: var(--celadon); width: 16px; height: 16px; flex: none; }
+details.weights summary { cursor: pointer; font-size: 13px; color: var(--ink-2); }
+.wgrid { display: grid; grid-template-columns: 4.5em 1fr 2.2em; gap: 6px 10px; align-items: center; margin-top: 10px; font-size: 13px; }
+.wgrid input { accent-color: var(--celadon); width: 100%; }
+.wgrid output { text-align: right; font-variant-numeric: tabular-nums; color: var(--ink-2); }
+.primary { background: var(--ink); color: var(--paper); border: 0; border-radius: 8px; padding: 10px 16px; font-weight: 600; cursor: pointer; letter-spacing: .1em; }
+.primary:hover { background: var(--celadon); }
+.ghost { background: none; border: 1px solid var(--line); border-radius: 8px; padding: 5px 12px; cursor: pointer; font-size: 13px; }
+.ghost:hover { border-color: var(--celadon); }
+.hint { font-size: 12.5px; color: var(--ink-2); margin: 0; }
+.w-木 { color: var(--w-mu); } .w-火 { color: var(--w-huo); } .w-土 { color: var(--w-tu); } .w-金 { color: var(--w-jin); } .w-水 { color: var(--w-shui); }
+.tag { display: inline-block; padding: 0 8px; border-radius: 4px; font-size: 12px; line-height: 20px; background: var(--sunk); white-space: nowrap; }
+.lv-吉, .lv-大吉 { color: var(--good); } .lv-半吉, .lv-中平 { color: var(--warn); } .lv-凶, .lv-欠佳 { color: var(--bad); }
+
+/* 测算报告的步骤 */
+.report-head { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 6px 16px; align-items: baseline; margin-bottom: 14px; }
+.report-head h2 { font-family: var(--serif); font-size: 20px; margin: 0; }
+.steps { display: grid; gap: 14px; }
+.step { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 16px 18px 18px; display: grid; grid-template-columns: 2.2em minmax(0, 1fr); gap: 4px 14px; }
+.step-no { font-family: var(--serif); font-size: 22px; font-weight: 700; color: var(--seal); line-height: 1.3; }
+.step h3 { font-family: var(--serif); font-size: 17px; margin: 0 0 10px; display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: baseline; }
+.step h3 .s { font-family: var(--sans); font-size: 13px; color: var(--ink-2); font-weight: 400; }
+.step p { margin: 0; }
+.step p + p { margin-top: 8px; }
+@media (max-width: 520px) { .step { grid-template-columns: minmax(0, 1fr); } }
+
+.tbl-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 14px; }
+th, td { text-align: left; padding: 6px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+th { font-weight: 500; color: var(--ink-2); font-size: 12px; white-space: nowrap; }
+td.num, th.num { font-variant-numeric: tabular-nums; }
+table.pan th, table.pan td { text-align: center; }
+table.pan th:first-child, table.pan td:first-child { text-align: left; color: var(--ink-2); font-size: 12px; white-space: nowrap; }
+table.pan td.gz { font-family: var(--serif); font-size: 26px; font-weight: 700; line-height: 1.2; }
+table.pan td.day { background: var(--celadon-soft); }
+table.pan td.small { font-size: 12.5px; line-height: 1.5; }
+
+.wx-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px 28px; }
+@media (max-width: 720px) { .wx-grid { grid-template-columns: minmax(0, 1fr); } }
+.bars { display: grid; gap: 7px; align-content: start; }
+.bar { display: grid; grid-template-columns: 1.6em minmax(0, 1fr) auto; gap: 10px; align-items: center; font-size: 13px; }
+.bar .track { height: 8px; background: var(--sunk); border-radius: 4px; overflow: hidden; }
+.bar .fill { display: block; height: 100%; border-radius: 4px; }
+.bar .num { color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; text-align: right; }
+.state { display: inline-block; min-width: 1.6em; text-align: center; font-size: 12px; border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; margin-left: 6px; color: var(--ink-2); }
+.meter { position: relative; height: 12px; background: var(--sunk); border-radius: 6px; margin: 8px 0 4px; overflow: hidden; }
+.meter .fill { position: absolute; inset: 0 auto 0 0; background: var(--celadon); }
+.meter .mid { position: absolute; left: 50%; top: -2px; bottom: -2px; width: 2px; background: var(--ink); }
+.meter-lab { display: flex; justify-content: space-between; font-size: 12px; color: var(--ink-2); }
+.reasons { margin: 0; padding-left: 1.2em; display: grid; gap: 4px; }
+.vote-list { display: grid; gap: 12px; margin-top: 14px; }
+.vote { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; }
+.vote .nm { font-size: 26px; }
+.vote .side { display: grid; justify-items: end; align-content: start; gap: 4px; }
+.vote .avg { font-family: var(--serif); font-size: 20px; color: var(--seal); font-variant-numeric: tabular-nums; }
+.vote .full { grid-column: 1 / -1; }
+.stars { display: inline-flex; gap: 2px; }
+.stars button { border: 0; background: none; font-size: 22px; line-height: 1; color: var(--line); cursor: pointer; padding: 0 1px; }
+.stars button.on { color: var(--seal); }
+.stars.small { font-size: 13px; color: var(--seal); letter-spacing: 1px; }
+.voters { display: grid; gap: 4px; font-size: 13.5px; }
+.voters .who { font-weight: 600; margin-right: 6px; }
+.mine { display: flex; flex-wrap: wrap; gap: 8px 12px; align-items: center; }
+.mine input[type=text] { flex: 1 1 200px; width: auto; }
+.copybox { width: 100%; min-height: 160px; margin-top: 10px; font: inherit; font-size: 13px; background: var(--paper); color: var(--ink); border: 1px solid var(--line); border-radius: 8px; padding: 8px; }
+@media (max-width: 520px) { .vote { grid-template-columns: minmax(0, 1fr); } .vote .side { justify-items: start; } }
+.tsnote { margin-top: 10px; padding: 10px 12px; background: var(--paper); border: 1px solid var(--line); border-radius: 8px; font-size: 13.5px; display: grid; gap: 4px; }
+.shen { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 10px; }
+.shen .box { border: 1px solid var(--line); border-radius: 8px; padding: 6px 14px; display: grid; justify-items: center; background: var(--paper); }
+.shen .box b { font-family: var(--serif); font-size: 26px; line-height: 1.2; }
+.shen .box span { font-size: 12px; color: var(--ink-2); }
+.shen .box.use { border-color: var(--celadon); background: var(--celadon-soft); }
+.combo-wrap { max-height: 320px; overflow: auto; border: 1px solid var(--line); border-radius: 8px; }
+.combo-wrap table th { position: sticky; top: 0; background: var(--surface); }
+.combo-wrap tr.pick { cursor: pointer; }
+.combo-wrap tr.pick:hover td { background: var(--sunk); }
+.combo-wrap tr.on td { background: var(--celadon-soft); }
+.charset { display: grid; gap: 10px; }
+.charset .grp { display: grid; grid-template-columns: 5.5em minmax(0, 1fr); gap: 8px; align-items: start; }
+.charset .grp > span { font-size: 13px; padding-top: 2px; }
+.cz { display: inline-flex; align-items: baseline; gap: 2px; font-family: var(--serif); font-size: 16px; margin: 0 8px 4px 0; }
+.cz sub { font-family: var(--sans); font-size: 10px; color: var(--ink-2); }
+.zx-good { text-decoration: underline; text-decoration-color: var(--good); text-decoration-thickness: 2px; text-underline-offset: 4px; }
+.zx-bad { color: var(--ink-2); opacity: .6; }
+
+/* 候选名卡片 */
+.subhead { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; flex-wrap: wrap; margin: 4px 0 10px; }
+.subhead h4 { font-family: var(--serif); font-size: 15px; margin: 0; }
+.grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; }
+.card { background: var(--paper); border: 1px solid var(--line); border-radius: var(--r); padding: 13px 14px 11px; display: flex; flex-direction: column; gap: 7px; cursor: pointer; transition: border-color .15s; }
+.card .acts { margin-top: auto; }
+.card:hover { border-color: var(--celadon); }
+.card .head { display: flex; justify-content: space-between; align-items: start; gap: 8px; }
+.nm { font-family: var(--serif); font-size: 28px; font-weight: 700; letter-spacing: .12em; line-height: 1.2; }
+.nm ruby rt { font-family: var(--sans); font-size: 11px; font-weight: 400; color: var(--ink-2); letter-spacing: 0; }
+.seal { font-family: var(--serif); color: var(--seal); border: 1.5px solid var(--seal); border-radius: 4px; min-width: 42px; text-align: center; font-size: 18px; font-weight: 700; line-height: 1.1; padding: 4px 4px 2px; font-variant-numeric: tabular-nums; }
+.seal small { display: block; font-size: 10px; font-weight: 500; letter-spacing: .05em; }
+.meta-line { display: flex; gap: 6px; flex-wrap: wrap; font-size: 12px; }
+.meta-line .tag.hit { background: var(--celadon-soft); }
+.src { font-family: var(--serif); font-size: 13.5px; margin: 0; }
+.move { font-size: 12px; }
+.aibar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 12px 14px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); margin-bottom: 16px; font-size: 13.5px; }
+.aibar .primary { padding: 7px 14px; font-size: 14px; letter-spacing: .04em; }
+.aibar .err { color: var(--bad); }
+.aibar .busy { color: var(--ink-2); }
+.ai { font-size: 12.5px; line-height: 1.6; }
+.aitag { display: inline-block; font-size: 11.5px; line-height: 18px; padding: 0 6px; border-radius: 4px; margin-right: 6px; border: 1px solid currentColor; }
+.aitag.v-推荐 { color: var(--good); } .aitag.v-可用 { color: var(--warn); } .aitag.v-不建议 { color: var(--bad); }
+.ai .issue { color: var(--bad); }
+.ai-deep { white-space: pre-wrap; font-size: 14.5px; line-height: 1.8; margin-top: 8px; }
+.ai-deep:empty { display: none; }
+.move.up { color: var(--good); } .move.down { color: var(--bad); }
+.updated { color: var(--good); }
+#report { transition: opacity .15s; }
+.src cite { display: block; font-style: normal; font-family: var(--sans); font-size: 12px; color: var(--ink-2); margin-top: 2px; }
+.src.none { color: var(--ink-2); font-family: var(--sans); font-size: 12.5px; }
+mark { background: var(--mark); color: inherit; padding: 0 1px; border-radius: 2px; }
+.card .acts { display: flex; gap: 6px; justify-content: flex-end; }
+.icon-btn { background: none; border: 1px solid transparent; border-radius: 6px; padding: 2px 8px; font-size: 12.5px; color: var(--ink-2); cursor: pointer; }
+.icon-btn:hover { border-color: var(--line); color: var(--ink); }
+.icon-btn[aria-pressed="true"] { color: var(--seal); }
+.say { display: inline-flex; align-items: center; gap: 4px; }
+.say svg { width: 14px; height: 14px; flex: none; }
+.say.on { color: var(--seal); border-color: var(--line); }
+/* 快速挑名 */
+.pick-wrap { max-width: 520px; margin: 0 auto; }
+.pick-top { display: flex; justify-content: space-between; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
+.pcard { position: relative; background: #fbfaf6; color: #1d2a2e; border: 1px solid var(--line); border-radius: 16px; padding: 26px 22px 20px; text-align: center; box-shadow: 0 6px 22px rgba(0,0,0,.06); touch-action: pan-y; user-select: none; transition: transform .25s ease, opacity .25s ease; }
+.pcard.drag { transition: none; }
+.pcard .big { font-size: 64px; line-height: 1.15; letter-spacing: 6px; }
+.pcard .py { color: #55666a; font-size: 15px; letter-spacing: 2px; margin-top: 4px; }
+.pcard .means { margin-top: 14px; text-align: left; font-size: 14.5px; display: grid; gap: 4px; }
+.pcard .means b { font-weight: 600; margin-right: 6px; }
+.pcard .src { margin-top: 12px; text-align: left; font-size: 13.5px; background: #f3f1e8; border-left: 3px solid #3f7466; padding: 6px 10px; border-radius: 4px; }
+.pcard .src mark { background: #f3dfae; color: inherit; }
+.pcard .src cite { display: block; font-style: normal; color: #55666a; font-size: 12px; }
+.pcard .chips { margin-top: 12px; display: flex; gap: 6px; justify-content: center; flex-wrap: wrap; }
+.pcard .chips span { font-size: 12px; border: 1px solid #cbd6d0; border-radius: 999px; padding: 1px 9px; color: #55666a; }
+.pcard .stamp { position: absolute; top: 18px; font-size: 20px; font-weight: 700; padding: 2px 10px; border: 3px solid; border-radius: 8px; opacity: 0; transform: rotate(-12deg); }
+.pcard .stamp.l { left: 16px; color: #b03a2c; } .pcard .stamp.r { right: 16px; color: #2f7a4a; transform: rotate(12deg); }
+.pick-btns { display: flex; gap: 14px; justify-content: center; margin-top: 16px; }
+.pick-btns button { min-width: 120px; padding: 12px 18px; font-size: 16px; border-radius: 999px; cursor: pointer; }
+.pick-btns .skip { background: var(--surface); border: 1px solid var(--line); color: var(--ink-2); }
+.pick-btns .like { background: var(--seal); border: 1px solid var(--seal); color: #fff; }
+.pick-sub { display: flex; gap: 10px; justify-content: center; margin-top: 10px; flex-wrap: wrap; }
+.taste { margin-top: 18px; }
+.taste .row2 { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+.taste .row2 span { font-size: 13px; border-radius: 999px; padding: 2px 10px; background: var(--celadon-soft); }
+.taste .row2 span.neg { background: var(--sunk); color: var(--ink-2); }
+/* 书写效果预览 */
+.wprev { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.wprev .w { border: 1px solid var(--line); border-radius: 8px; background: #fbfaf6; color: #1d2a2e; padding: 10px 10px 6px; text-align: center; }
+.wprev .w b { display: block; font-weight: 400; font-size: 34px; line-height: 1.35; letter-spacing: 2px; white-space: nowrap; }
+.wprev .w span { font-size: 11.5px; color: #55666a; }
+.f-kai { font-family: 'NameKai', 'Kaiti SC', STKaiti, KaiTi, serif; }
+.f-brush { font-family: 'NameBrush', 'NameKai', 'Kaiti SC', STKaiti, KaiTi, serif; }
+.f-hand { font-family: 'NameHand', 'NameKai', 'Kaiti SC', STKaiti, KaiTi, serif; }
+.f-song { font-family: 'Songti SC', STSong, SimSun, 'Noto Serif SC', serif; }
+.f-hei { font-family: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', sans-serif; }
+.tzg { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 12px; }
+.tzg i { font-style: normal; width: 64px; height: 64px; display: grid; place-items: center; font-size: 46px; color: #1d2a2e; border: 1.5px solid #c4533a; background-color: #fffdf8;
+  background-image: linear-gradient(#c4533a66, #c4533a66), linear-gradient(#c4533a66, #c4533a66), linear-gradient(45deg, transparent calc(50% - .5px), #c4533a33 50%, transparent calc(50% + .5px)), linear-gradient(-45deg, transparent calc(50% - .5px), #c4533a33 50%, transparent calc(50% + .5px));
+  background-size: 100% 1px, 1px 100%, 100% 100%, 100% 100%; background-position: center, center, center, center; background-repeat: no-repeat; }
+.cover { margin-top: 12px; border-radius: 8px; background: #2f6a9c; color: #fff; padding: 16px 18px; max-width: 360px; }
+.cover .t { font-size: 22px; letter-spacing: 6px; text-align: center; margin-bottom: 12px; }
+.cover .ln { background: #fff; color: #1d2a2e; border-radius: 4px; padding: 6px 12px; display: flex; gap: 10px; align-items: baseline; margin-top: 6px; font-size: 14px; }
+.cover .ln b { font-weight: 400; font-size: 26px; letter-spacing: 3px; }
+.more { display: flex; justify-content: center; margin-top: 12px; }
+.empty { padding: 28px 20px; text-align: center; color: var(--ink-2); border: 1px dashed var(--line); border-radius: var(--r); }
+.loading { color: var(--ink-2); padding: 30px 0; text-align: center; }
+.filter-note { display: flex; gap: 8px; align-items: center; font-size: 13px; margin-bottom: 10px; }
+
+/* 详情 */
+.sheet-bg { position: fixed; inset: 0; background: rgb(0 0 0 / .35); z-index: 20; }
+.sheet { position: fixed; top: 0; right: 0; bottom: 0; width: min(680px, 100%); background: var(--paper); z-index: 21; overflow: auto; padding: calc(env(safe-area-inset-top, 0px) + 18px) 20px calc(env(safe-area-inset-bottom, 0px) + 40px); box-shadow: -12px 0 40px rgb(0 0 0 / .18); }
+.sheet .close { position: sticky; top: 0; float: right; background: var(--paper); }
+.detail { display: grid; gap: 14px; }
+.detail .hero { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+.detail .hero .nm { font-size: 42px; }
+.detail .hero .seal { font-size: 28px; min-width: 66px; padding: 8px 6px 4px; }
+.gradebox { display: grid; gap: 2px; }
+.gradebox b { font-family: var(--serif); font-size: 18px; }
+.sec { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 14px 16px; }
+.sec h3 { font-family: var(--serif); font-size: 16px; margin: 0 0 10px; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 4px 10px; }
+.sec h3 .s { font-family: var(--sans); font-size: 13px; color: var(--ink-2); font-weight: 400; font-variant-numeric: tabular-nums; }
+.sec ul { margin: 0; padding-left: 1.2em; }
+.sec p { margin: 0; }
+.sec .comment { font-size: 14.5px; line-height: 1.8; }
+.scorebars { display: grid; gap: 6px; }
+.scorebars .bar { grid-template-columns: 5em minmax(0, 1fr) 2.5em; }
+td.big { font-family: var(--serif); font-size: 22px; font-weight: 700; }
+.ge-notes { display: grid; gap: 6px; margin-top: 10px; font-size: 13.5px; }
+.ge-notes b { font-family: var(--serif); }
+.warnbox li.w { color: var(--bad); }
+.quote { font-family: var(--serif); font-size: 15px; }
+.quote + .quote { margin-top: 10px; }
+
+/* 检测、收藏、说明 */
+.panel { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r); padding: 18px 20px; }
+.checkform { display: flex; gap: 10px; flex-wrap: wrap; align-items: end; }
+.checkform .field { flex: 1 1 200px; }
+.about { max-width: 70ch; }
+.about h3 { font-family: var(--serif); font-size: 17px; margin: 22px 0 6px; }
+.about h3:first-child { margin-top: 0; }
+.cmp td:first-child, .cmp th:first-child { color: var(--ink-2); white-space: nowrap; }
+.cmp td { min-width: 130px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+
+
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><h1>诗词八字起名</h1><span>排盘 · 喜用 · 生肖 · 五格 · 三才 · 典故</span></div>
+    <nav class="tabs" role="tablist">
+      <button role="tab" data-tab="gen" aria-selected="true">测算起名</button>
+      <button role="tab" data-tab="pick" aria-selected="false">快速挑名</button>
+      <button role="tab" data-tab="check" aria-selected="false">名字检测</button>
+      <button role="tab" data-tab="fav" aria-selected="false">收藏对比 <span id="favCount"></span></button>
+      <button role="tab" data-tab="vote" aria-selected="false">家人投票 <span id="voteCount"></span></button>
+      <button role="tab" data-tab="about" aria-selected="false">计算说明</button>
+    </nav>
+  </header>
+
+  <div class="layout">
+    <aside class="settings" aria-label="测算条件">
+      <button class="stoggle" id="stoggle" type="button" aria-expanded="true"><span class="sum" id="ssum"></span><span class="chev" id="schev">收起</span></button>
+      <div class="field">
+        <label for="surname">姓氏</label>
+        <input type="text" id="surname" value="" placeholder="如：张" list="surnameList" autocomplete="off">
+        <datalist id="surnameList"></datalist>
+      </div>
+      <div class="field">
+        <span class="lbl">性别</span>
+        <div class="seg" id="sex">
+          <button type="button" data-v="f" aria-pressed="false">女孩</button>
+          <button type="button" data-v="m" aria-pressed="false">男孩</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="bdate">出生时间（北京时间）</label>
+        <div class="row">
+          <input type="date" id="bdate" value="">
+          <input type="time" id="btime" value="">
+        </div>
+        <label class="check"><input type="checkbox" id="nohour"> 时辰未知（只排三柱）</label>
+      </div>
+      <div class="field">
+        <label for="place">出生地（换算真太阳时）</label>
+        <select id="place" class="full">
+          <option value="">不换算，直接按北京时间排盘</option>
+          <optgroup label="直辖市"><option value="116.40">北京</option><option value="121.47">上海</option><option value="117.20">天津</option><option value="106.55">重庆</option></optgroup>
+          <optgroup label="华北"><option value="114.51">石家庄</option><option value="118.18">唐山</option><option value="112.55">太原</option><option value="111.75">呼和浩特</option><option value="109.84">包头</option></optgroup>
+          <optgroup label="东北"><option value="123.43">沈阳</option><option value="121.61">大连</option><option value="125.32">长春</option><option value="129.51">延吉</option><option value="126.53">哈尔滨</option><option value="130.32">佳木斯</option><option value="122.53">漠河</option></optgroup>
+          <optgroup label="华东"><option value="118.80">南京</option><option value="120.58">苏州</option><option value="120.30">无锡</option><option value="117.28">徐州</option><option value="120.16">杭州</option><option value="121.55">宁波</option><option value="120.70">温州</option><option value="117.23">合肥</option><option value="119.30">福州</option><option value="118.09">厦门</option><option value="118.68">泉州</option><option value="115.86">南昌</option><option value="114.93">赣州</option><option value="117.00">济南</option><option value="120.38">青岛</option><option value="121.45">烟台</option></optgroup>
+          <optgroup label="华中"><option value="113.62">郑州</option><option value="112.45">洛阳</option><option value="114.31">武汉</option><option value="111.29">宜昌</option><option value="112.94">长沙</option></optgroup>
+          <optgroup label="华南"><option value="113.26">广州</option><option value="114.06">深圳</option><option value="113.75">东莞</option><option value="113.12">佛山</option><option value="113.58">珠海</option><option value="116.68">汕头</option><option value="110.36">湛江</option><option value="108.37">南宁</option><option value="110.29">桂林</option><option value="110.35">海口</option><option value="109.51">三亚</option></optgroup>
+          <optgroup label="西南"><option value="104.07">成都</option><option value="104.68">绵阳</option><option value="106.71">贵阳</option><option value="106.93">遵义</option><option value="102.83">昆明</option><option value="100.27">大理</option><option value="100.23">丽江</option><option value="100.80">景洪</option><option value="91.11">拉萨</option></optgroup>
+          <optgroup label="西北"><option value="108.94">西安</option><option value="103.83">兰州</option><option value="101.78">西宁</option><option value="106.23">银川</option><option value="87.62">乌鲁木齐</option><option value="81.32">伊宁</option><option value="75.99">喀什</option></optgroup>
+          <optgroup label="港澳台"><option value="114.17">香港</option><option value="113.54">澳门</option><option value="121.56">台北</option></optgroup>
+          <option value="custom">其他地方，手动填写经度</option>
+        </select>
+        <div class="row" id="lngRow" hidden><label for="lng" class="hint">东经</label><input type="text" id="lng" inputmode="decimal" placeholder="如 113.5" style="width:8em"><span class="hint">度</span></div>
+        <label for="sect" class="hint">子时（23:00–1:00）出生的日柱</label>
+        <select id="sect" class="full">
+          <option value="1">23:00 起算作次日（传统做法）</option>
+          <option value="2">区分早晚子时，23:00–24:00 仍算当天</option>
+        </select>
+      </div>
+      <div class="field">
+        <span class="lbl">名字字数</span>
+        <div class="seg" id="len">
+          <button type="button" data-v="2" aria-pressed="true">双字名</button>
+          <button type="button" data-v="1" aria-pressed="false">单字名</button>
+        </div>
+      </div>
+      <div class="field">
+        <label for="wxRule">用字五行（筛选条件）</label>
+        <select id="wxRule" class="full">
+          <option value="balanced">至少一字合喜用，且不用忌神字</option>
+          <option value="strict">两字都必须合喜用</option>
+          <option value="off">不限</option>
+        </select>
+      </div>
+      <div class="field">
+        <span class="lbl">筛选条件</span>
+        <label for="strokeMode" class="hint">笔画要求（五格三才）</label>
+        <select id="strokeMode" class="full">
+          <option value="loose" selected>放宽：人格、总格不是凶数即可</option>
+          <option value="strict">严格：只用大吉、吉的笔画组合</option>
+          <option value="off">不限：五格只参与评分</option>
+        </select>
+        <label class="check"><input type="checkbox" id="noTrend" checked> 排除网红字（梓、涵、汐、诺、萱等）</label>
+        <label class="check"><input type="checkbox" id="onlyPoem"> 只看有典籍出处的名字</label>
+      </div>
+      <div class="field">
+        <label for="liked">喜欢的名字（风格参考，可选）</label>
+        <input type="text" id="liked" placeholder="如：舒珩、知夏，用顿号或空格隔开">
+      </div>
+      <div class="field">
+        <span class="lbl">风格</span>
+        <div class="seg" id="style">
+          <button type="button" data-v="qing" aria-pressed="true">清新自然</button>
+          <button type="button" data-v="duan" aria-pressed="false">端庄大气</button>
+          <button type="button" data-v="shi" aria-pressed="false">古典诗意</button>
+          <button type="button" data-v="any" aria-pressed="false">不限</button>
+        </div>
+      </div>
+      <div class="field">
+        <span class="lbl">期望寓意（可多选）</span>
+        <div class="chips" id="tags"></div>
+      </div>
+      <div class="field">
+        <label for="fixed">固定用字（辈分字等）</label>
+        <div class="row">
+          <input type="text" id="fixed" maxlength="1" placeholder="如：思" style="width: 6em">
+          <select id="fixedPos" aria-label="固定字位置">
+            <option value="1">放在第一个字</option>
+            <option value="2">放在第二个字</option>
+            <option value="0">位置不限</option>
+          </select>
+        </div>
+      </div>
+      <div class="field">
+        <label for="exclude">避开的字（长辈名字等）</label>
+        <input type="text" id="exclude" placeholder="直接输入，如：华芳">
+      </div>
+      <details class="weights">
+        <summary>调整评分权重</summary>
+        <div class="wgrid" id="weights"></div>
+        <p class="hint" style="margin-top:8px">数值越大，这一项在总分里越重要，设为 0 即不参与评分。权重只改变分数和排序；哪些名字能入选，由上面的“用字五行”“吉祥笔画”“排除网红字”等筛选条件决定。</p>
+      </details>
+      <p class="hint">修改任一条件后会自动重新测算，名字卡片上会标出名次和分数的变化。</p>
+      <button class="primary" id="go" type="button">重新测算</button>
+    </aside>
+
+    <main>
+      <section id="tab-gen">
+        <div id="report"><div class="loading">正在载入字库和典籍语料…</div></div>
+      </section>
+
+      <section id="tab-pick" hidden><div id="pickOut"></div></section>
+
+      <section id="tab-check" hidden>
+        <div class="panel">
+          <div class="checkform">
+            <div class="field">
+              <label for="checkName">输入完整姓名</label>
+              <input type="text" id="checkName" value="张思齐" maxlength="5">
+            </div>
+            <button class="primary" id="checkBtn" type="button">检测</button>
+          </div>
+          <p class="hint" style="margin-top:8px">会用左侧的出生时间和性别一起分析。复姓（如欧阳、司马）会自动识别。</p>
+        </div>
+        <div id="checkOut" style="margin-top:16px"></div>
+      </section>
+
+      <section id="tab-vote" hidden>
+        <div id="voteOut"><div class="loading">正在连接共享名单…</div></div>
+      </section>
+
+      <section id="tab-fav" hidden>
+        <div id="favOut"></div>
+      </section>
+
+      <section id="tab-about" hidden>
+        <div class="panel about">
+          <h3>测算流程</h3>
+          <p>一、先把北京时间换算为真太阳时：按出生地经度修正（与东经 120° 每差 1 度差 4 分钟），再加均时差（地球公转造成的日影快慢，全年在 −14 到 +16 分钟之间）；1986–1991 年夏令时期间先减 1 小时。子时出生可选择 23:00 换日或区分早晚子时。然后按换算后的时间排出四柱八字，节气交接精确到时刻（例如 2026 年寒露在 10 月 8 日 14:29，之后出生即为戌月），并列出十神、藏干、纳音和十二长生。</p>
+          <p>二、分析五行旺衰：统计八字中五行的个数和加权力量（天干 1；地支藏干本气 1、中气 0.5、余气 0.3；月令加倍），按月令列出旺相休囚死，并逐项判断日主是否得令、得地、得势。再看四柱之间的刑冲合会：相邻天干五合，月令支持则合化（原两干力量转为化神），否则合而不化（力量略减）；地支三会局加 2、三合局加 1.5、相邻半合与六合加 0.5；相冲的两支力量各减四分之一（隔位遥冲减十分之一）；相刑、相害只作标注。生扶日主的力量（同类 + 印星）占比过半判为身强，反之为身弱。</p>
+          <p>三、定喜用神：先看是否从格。生扶占八成以上且几乎没有官杀，按从强格（专旺）顺势取比劫、印星为喜用；生扶不足两成、日主无根且印星无力，按从财、从杀或从儿格顺从最旺的一方。其余按扶抑：身强取克、泄、耗日主的五行中最弱的两个为用神、喜神；身弱取印星为用神、比劫为喜神。再看调候：夏季（巳午未月）需水润燥，冬季（亥子丑月）需火暖局，八字中缺少时作为调候用神，与喜用同样加分；与扶抑冲突时以扶抑为主。这是简化的取用方法，专业命理师的判断可能不同。</p>
+          <p>四、生肖喜忌：生肖按年柱（立春换年）确定。与本命生肖三合、六合的生肖字形为宜，六冲、六害为忌；再按生肖习性看部首（如属马喜艹、禾、米、宀、纟、彡，忌田、车）。这是民间说法，只作为分量较小的评分项，与八字喜用冲突时以八字为先。</p>
+          <p>五、笔画要求可选三档：放宽（默认）只要求人格、总格不是凶数；严格只用下面的“大吉”“吉”组合；不限则五格三才只参与评分。按姓氏的康熙笔画，枚举名字笔画组合，算出天、人、地、外、总五格。人格、地格、总格皆吉、外格不凶、三才吉以上的定为“大吉”；人格吉、地格总格无凶数、三才不凶的定为“吉”；其余为“中平”或“欠佳”。</p>
+          <p>六、选字：从约 1200 字的精选字库中挑出符合性别、符合喜用五行、笔画能落进吉祥组合的字，默认排除近年用滥的网红字，并标出生肖所喜、所忌的字。</p>
+          <p>七、逐个组合打分评级：寓意 25、五行补益 20、音律 20、典籍出处 15、三才五格 10、生肖喜忌 5、字形 5（权重可调，默认更看重名字本身是否好听）。90 分以上为甲等，82 分以上为乙等，72 分以上为丙等，其余为丁等。另外按五格三才给出“大吉、吉、中平、欠佳”的综合吉凶判断，并自动生成点评。</p>
+          <h3>风格</h3>
+          <p>默认的“清新自然”风格：说教味重的品德字（德、恭、淑、贞、秉等）和上一辈常用字（芳、秀、珍、国、建等）扣分，网红字扣分，两字皆花草扣分；“动词加自然意象”的组合（知夏、听澜、望舒一类）加分。含古板字的典故名在这个风格下不享受典故加分。另外每个双字名都会看两个字是否连贯：典故、典籍成词、动宾结构最好，只是在诗句里碰巧相邻或毫无关联的组合会扣分。“端庄大气”“古典诗意”风格保留原来的偏好。</p>
+          <p>“AI 起名”会把喜用五行、可用的吉祥笔画、候选字表和风格要求交给 Claude 组名，程序再逐个核对笔画、五行和避坑规则，不合格的剔除，合格的完整打分。结果保存在本机浏览器，换条件后各自独立保存。</p>
+          <h3>五格与三才</h3>
+          <p>按熊崎氏姓名学，用康熙字典笔画计算：部首按原形计（氵按水 4 画、艹按艸 6 画、王按玉 5 画、辶按辵 7 画、左阝按阜 8 画、月按肉 6 画），数字一至十按数值计，简化字按繁体计（张按張 11 画）。单姓的天格、单名的地格加假数 1。81 数理吉凶及释义是民间流传的说法，版本之间略有出入；21、23、29、33、39 属首领数，传统认为女性用之偏刚，女孩名中按半吉处理。</p>
+          <p>三才看天、人、地三格的五行（尾数 1、2 为木，3、4 为火，5、6 为土，7、8 为金，9、0 为水）。天格对人格看成功运，人格与地格看基础运：被生最佳，比和次之，生出去为付出，克出去为强势，被克最差。</p>
+          <h3>汉字的五行</h3>
+          <p>统一按一条规则判定：先看康熙字典的部首（按繁体字形），部首五行公认的按部首定。木：木、艹、竹、禾、米、纟、麦、麻；火：火、灬、日、心、忄、赤；土：土、山、石、田、左阝；金：金、钅、王（玉）、刀、刂、戈、斤、言、讠；水：氵、水、冫、雨、鱼。部首不在其中的，按字义判定。详情页每个字的五行下方会注明依据。各家起名书对同一个字的五行常有分歧，比如“华”有人按读音定为水，本工具按繁体“華”的艹部定为木。</p>
+          <h3>典籍出处</h3>
+          <p>语料包括诗经、楚辞、周易（易传）、尚书、礼记、论语、大学、中庸、孟子、老子、庄子、荀子、世说新语、古文观止、千家诗、唐诗三百首、宋词三百首，以及李白、杜甫、王维、苏轼、李清照、辛弃疾等五十余位名家的诗词，均为公有领域文本。出处分五档：“典故名”是人工整理并核对过原文的经典词语，共 328 个，分女孩、男孩、通用三类（如思齐、令仪、怀瑾、惠风、上善、文思），分数最高；“各取一字”是两个字分别出自不同原句，各有寓意（如“浅”取自楚辞“石濑兮浅浅”，“溪”取自千家诗“清溪流过碧山头”），分数次之；“成词”是在典籍中多次连用的两个字；“相连”和“同句”只是在同一句里出现，分数较低。字库里约 1150 个字都配了单字出处，每字最多三句，优先诗经楚辞、其次唐诗宋词和千家诗，议论性的经部子部句子只在诗文里找不到时才用；“各取一字”只在两个字能合成一个意思时成立（动词加意象、两个意象，或同属自然、美好、安宁、文雅、光明一类），并且只用典故名和精选好名里出现过的字以及意象字。含悲伤、战乱等意象的句子不参与取名。</p>
+          <h3>重名参考</h3>
+          <p>用公开的 120 万人名语料统计每个名字（不含姓）有多少人在用，分为罕见（不足 3 人）、少见（3–4 人）、较少（5–19 人）、常见（20–59 人）、很常见（60 人以上）；公安部《全国姓名报告》（2019–2021 年）和 2024、2025 年多地公安部门公布的新生儿热门名单标为“爆款”；“锦”等 2025 年多地最热门的字会单独提示。这份语料覆盖各年龄段、偏重成年人，所以近年流行的名字要同时看“爆款”和网红字提示。常见、很常见、爆款会在避坑项里少量扣分。珩、洵、澈、熠、璟等近两年在新生儿中热度上升的字只作提示。</p>
+          <h3>候选名字怎么分组</h3>
+          <p>按名字的来历分组，每个名字只出现在一组：两个字在同一句经典里连用的归“典故名”；两个字分别出自不同经典原句、又能合成一个意思的归“字字有出处”；其余人工挑选和新拟的名字归“精选好名”；程序按规则拼出来的放在最后的“规则拼字”（默认折叠）。在线版另有“AI 起名”。各组上方可以“按意象看”：草木、山水、日月光华（日月星辰、天气时令、光彩）、玉石、书卷（诗书、乐器、文章）、温婉安宁、品德志向，按两个字的偏旁和字义归类，一个名字可以同属几类。</p>
+          <h3>精选好名</h3>
+          <p>人工挑选的约 860 个现代好名（包括时辰名、诗经名、二十四节气名、星宿雅称、民国感名字、温润如玉的男孩名和诗经单字名），以及照同样风格新拟的约 230 个名字。按性别、笔画要求、用字五行和排除字筛选后打分；网红字不排除，但会扣分并提示，重名多的会标出。选单字名时这里只列单字名。部分名单有“某时辰出生宜用某字”的说法，与八字喜用常有冲突，本工具不据此加分。</p>
+          <h3>期望寓意</h3>
+          <p>可多选 19 类：品德、聪慧、美好、文雅、光明、自然、志向、安宁、福乐、坚毅，以及新增的仁善、诚信、健康、才艺、灵动、豁达、自在、高洁、温润。每个字按字义人工标注所属类别（如“康、颐、椿、松”属健康，“琴、笙、墨、砚”属才艺，“瑾、瑜、珩、润”属温润）。选了寓意后，名字里有字契合就在寓意分之外再直接加分：选一类时契合加 5 分；选两类以上时契合其中一类加 2 分、两类加 5 分；一类都不契合的名字寓意分会低一些。不选则所有名字按同一标准打分。</p>
+          <h3>上户口用字</h3>
+          <p>户籍登记以国务院 2013 年公布的《通用规范汉字表》（8105 字）为准。名字里有表外字的，会标红提醒“上户口可能无法登记”，并且不会出现在候选名里；在表里、但不在早年 GB2312 字符集里的字（如玥、璟、堃），只提示极少数老旧系统可能打不出来。名字检测可以查询表内全部 8105 字。</p>
+          <h3>快速挑名</h3>
+          <p>还不确定喜欢什么风格时，可以在“快速挑名”里一张张看名字，点“喜欢”或“跳过”（手机上左右滑动）。名字从精选好名、典故名、字字有出处和自由组合里随机抽取（双字名、单字名都可以，跟随左侧“名字字数”），都已按左侧条件筛过（性别、八字五行、笔画、能上户口、无谐音问题）；前 10 个完全随机，之后约七成按你的口味抽、三成继续随机，并避免连续出现相同的字。程序记录你喜欢和跳过的字、偏旁、声调和名字类型，挑满 8 个后给出口味总结，并在“测算起名”的评分里按口味加减最多 6 分（详情页会注明）。喜欢的名字自动加入收藏。口味保存在当前设备的浏览器里，一直有效；点右上角“重置”可以清空重来，并可选择是否把挑中的名字移出收藏。</p>
+          <h3>书写效果与分享</h3>
+          <p>名字详情里可以看名字用楷体（霞鹜文楷）、毛笔行楷（马善政）、手写（龙藏）写出来的样子，以及田字格和作业本封面效果；三种字体都是开源字体（SIL OFL 1.1），只保留了本工具用到的字。“收藏对比”里的“复制分享链接”会把名单和出生条件写进手机版网址（# 后面的部分，不经过服务器），家人用手机打开就能看到同一份名单和分析，不需要账号；不勾“带上出生时间”则只分享姓氏、性别和名字。</p>
+          <h3>避坑检查</h3>
+          <p>检查普通话谐音不雅、拼音首字母缩写、日常容易读错的多音字、近年热门名字和网红用字。字库外的字会提示自行确认字义。方言谐音请自行判断。</p>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<div class="sheet-bg" id="sheetBg" hidden></div>
+<aside class="sheet" id="sheet" hidden aria-label="名字详情">
+  <button class="ghost close" id="closeSheet" type="button">关闭</button>
+  <div id="sheetBody"></div>
+</aside>
+
+<script src="lunar.js"></script>
+<script src="html2canvas.min.js"></script>
+<script src="engine.js"></script>
+<script>
+(function () {
+  'use strict';
+  const E = window.NameEngine;
+  const $ = s => document.querySelector(s);
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v ? JSON.parse(v) : d; } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { /* 浏览器不允许存储时忽略 */ } },
+  };
+  const WXC = w => w ? 'w-' + w : '';
+  const WXVAR = { 木: 'mu', 火: 'huo', 土: 'tu', 金: 'jin', 水: 'shui' };
+  const wxs = w => `<span class="${WXC(w)}">${w || '—'}</span>`;
+  const LABEL = { wuxing: '五行补益', wuge: '三才五格', yinlv: '音律', yuyi: '寓意', chuchu: '典籍出处', shengxiao: '生肖喜忌', zixing: '字形' };
+  const CN_NUM = ['', '一', '二', '三', '四', '五', '六'];
+
+  let DATA = null, POEMS = null, LOOKUP = null, SURNAMES = {};
+  // 离线版：数据直接写在页面里（<script type="application/json" id="data-…">），不调用 Claude
+  // 离线版（数据内联）和独立网页应用版（window.NAMER_STANDALONE）都不调用 Claude
+  const OFFLINE = !!document.getElementById('data-chars') || window.NAMER_STANDALONE === true;
+  if (OFFLINE) {
+    document.querySelectorAll('nav.tabs button[data-tab="vote"]').forEach(b => b.remove());
+    const brand = document.querySelector('.brand span'); if (brand) brand.textContent += window.NAMER_STANDALONE ? ' · 手机版' : ' · 离线版';
+  }
+  let state = null;
+  let favs = store.get('favs', []), hidden = new Set(store.get('hiddenNames', []));
+  const weights = Object.assign({}, E.DEFAULT_WEIGHTS, store.get('weights3', {}));
+
+  /* ---------- 条件面板 ---------- */
+  const segValue = id => { const b = document.querySelector(`#${id} [aria-pressed="true"]`); return b ? b.dataset.v : null; };
+  document.querySelectorAll('.seg').forEach(seg => seg.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    seg.querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b ? 'true' : 'false'));
+    schedule(150);
+  }));
+  Object.entries(E.TAGS).forEach(([k, v]) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'chip'; b.dataset.v = k; b.textContent = v; b.setAttribute('aria-pressed', 'false');
+    b.onclick = () => { b.setAttribute('aria-pressed', b.getAttribute('aria-pressed') === 'true' ? 'false' : 'true'); schedule(300); };
+    $('#tags').appendChild(b);
+  });
+  Object.keys(E.DEFAULT_WEIGHTS).forEach(k => {
+    $('#weights').insertAdjacentHTML('beforeend', `<label for="w-${k}">${LABEL[k]}</label><input type="range" id="w-${k}" min="0" max="40" step="5" value="${weights[k]}"><output id="o-${k}">${weights[k]}</output>`);
+  });
+  $('#weights').addEventListener('input', e => {
+    const k = e.target.id.slice(2); weights[k] = +e.target.value; $('#o-' + k).textContent = e.target.value; store.set('weights3', weights);
+  });
+
+  // 条件改动后自动重新测算（输入文字时稍等片刻再算）
+  let timer = null;
+  const MINE_IDS = ['strokeMode', 'wxRule', 'liked', 'exclude'];
+  function saveMine() {
+    if (!OFFLINE) return;
+    const o = { base: currentSettings(), style: segValue('style') };
+    MINE_IDS.forEach(id => { const el = $('#' + id); if (el) o[id] = el.value; });
+    store.set('mySettings', o);
+  }
+  function loadMine() {
+    if (!OFFLINE) return;
+    const o = store.get('mySettings', null); if (!o) return;
+    applySettings(o.base);
+    if (o.style) setSeg('style', o.style);
+    MINE_IDS.forEach(id => { const el = $('#' + id); if (el && typeof o[id] === 'string') el.value = o[id]; });
+    setTimeout(settingsSummary, 0);
+  }
+  function schedule(delay) {
+    saveMine();
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      if (!DATA) return;
+      if (!$('#tab-gen').hidden || !$('#tab-pick').hidden) run(true);
+      else if (!$('#tab-check').hidden) runCheck();
+      else if (!$('#tab-fav').hidden) renderFavs();
+      else if (!$('#tab-vote').hidden) renderVote();
+    }, delay);
+  }
+  document.querySelector('aside.settings').addEventListener('input', e => {
+    if (e.target.matches('input[type=range]')) schedule(350);
+    else if (e.target.matches('input[type=text]')) schedule(700);
+  });
+  $('#place').addEventListener('change', () => { $('#lngRow').hidden = $('#place').value !== 'custom'; });
+  /* 手机端：条件面板默认收起，只显示一行摘要 */
+  const narrow = window.matchMedia('(max-width: 900px)');
+  function settingsSummary() {
+    const seg = id => { const b = document.querySelector(`#${id} button[aria-pressed="true"]`); return b ? b.textContent.trim() : ''; };
+    const d = $('#bdate').value, t = $('#nohour').checked ? '时辰未知' : $('#btime').value;
+    const pl = $('#place'); const place = pl.value ? pl.options[pl.selectedIndex].text.split(/[（(]/)[0] : '';
+    const sm = $('#strokeMode'); const mode = sm.options[sm.selectedIndex].text.split('：')[0];
+    $('#ssum').innerHTML = `<b>${esc($('#surname').value.trim() || '—')}</b>${esc(seg('sex'))} · ${esc(d ? d.replace(/-/g, '.') : '未填日期')} ${esc(t)}<br><span>${[place, '笔画' + mode, seg('style')].filter(Boolean).map(esc).join(' · ')}</span>`;
+  }
+  function setCollapsed(on) {
+    const a = document.querySelector('aside.settings');
+    a.classList.toggle('collapsed', on);
+    $('#stoggle').setAttribute('aria-expanded', String(!on));
+    $('#schev').textContent = on ? '修改条件' : '收起';
+  }
+  $('#stoggle').addEventListener('click', () => setCollapsed(!document.querySelector('aside.settings').classList.contains('collapsed')));
+  ['input', 'change', 'click'].forEach(ev => document.querySelector('aside.settings').addEventListener(ev, () => setTimeout(settingsSummary, 0)));
+  settingsSummary();
+  if (narrow.matches) setCollapsed(true);
+  document.querySelector('aside.settings').addEventListener('change', e => {
+    if (!e.target.matches('input[type=text], input[type=range]')) schedule(150);
+  });
+
+  /* ---------- 字与姓氏 ---------- */
+  function charObj(c) {
+    if (DATA.byChar[c]) return DATA.byChar[c];
+    const l = LOOKUP[c];
+    if (l) return (DATA.byChar[c] = { c, py: l[0], tone: l[1], stroke: l[2], kx: l[3], wx: l[4], rad: l[5], rad2: l[6], wxb: l[7] || '未定', sex: 'n', tags: '', mean: '', poly: [], outside: true, tgh: l[8] || 0, gb: l[9] !== 0 });
+    return null;
+  }
+  function resolveSurname(s) {
+    if (SURNAMES[s]) return SURNAMES[s];
+    const chars = [...s].map(charObj);
+    if (!s || chars.some(c => !c)) return null;
+    return { s, chars };
+  }
+  function splitName(full) {
+    full = full.trim();
+    const two = full.slice(0, 2);
+    if (full.length >= 3 && SURNAMES[two] && SURNAMES[two].chars.length === 2) return [two, full.slice(2)];
+    return [full.slice(0, 1), full.slice(1)];
+  }
+  // loose：名字检测、收藏对比只需要出生信息，姓氏和性别没填也能算（姓从名字里拆）
+  function buildCtx(loose) {
+    const sv = $('#surname').value.trim(), sx = segValue('sex');
+    if (!loose && (!sv || !sx)) return { blank: true, error: `<b>先填写${!sv ? '姓氏' : ''}${!sv && !sx ? '、' : ''}${!sx ? '选择性别' : ''}</b><br>出生日期和时间可以稍后补，填了会按八字选字、算喜用神。填好后点“开始测算”。` };
+    const sur = sv ? resolveSurname(sv) : null;
+    if (sv && !sur && !loose) return { error: '姓氏里有字库查不到的字，请检查输入。' };
+    const female = sx ? sx === 'f' : null;
+    let bazi = null;
+    const d = $('#bdate').value, t = $('#btime').value || '12:00';
+    if (d) {
+      const [y, m, dd] = d.split('-').map(Number), [h, mi] = t.split(':').map(Number);
+      const hourKnown = !$('#nohour').checked && !!$('#btime').value;
+      const pv = $('#place').value;
+      let lng = null, placeName = '';
+      if (pv === 'custom') { const v = parseFloat($('#lng').value); if (v >= 70 && v <= 140) { lng = v; placeName = `东经 ${v}°`; } }
+      else if (pv) { lng = +pv; placeName = $('#place').selectedOptions[0].textContent; }
+      const ts = E.trueSolar(y, m, dd, h, mi, hourKnown ? lng : null);
+      try {
+        bazi = E.bazi(window.Solar, ts.y, ts.m, ts.d, ts.h, ts.mi, hourKnown, { sect: +$('#sect').value });
+        bazi.sect = +$('#sect').value;
+        bazi.ts = Object.assign(ts, { place: placeName, input: `${y}年${m}月${dd}日 ${t}`, customBad: pv === 'custom' && lng == null });
+        bazi.solar = `北京时间 ${y}年${m}月${dd}日` + (hourKnown ? ` ${t}` : '（时辰未知）');
+      } catch (e) { bazi = null; }
+    }
+    const tags = [...document.querySelectorAll('#tags [aria-pressed="true"]')].map(b => b.dataset.v);
+    const liked = $('#liked').value.split(/[\s,，、;；]+/).map(x => x.trim()).filter(x => x.length >= 2 && x.length <= 4)
+      .map(x => { const given = x.length === 2 ? x : splitName(x)[1]; return [...given].map(charObj).filter(Boolean); })
+      .filter(a => a.length);
+    return { surname: sur, female, bazi, tags, style: segValue('style'), liked, likedText: $('#liked').value.trim(), weights: Object.assign({}, weights), taste: store.get('taste', null) };
+  }
+
+  /* ---------- 公共片段 ---------- */
+  const rubyName = (sur, given) => [...sur, ...given].map(c => `<ruby>${c.c}<rt>${c.py}</rt></ruby>`).join('');
+  function highlight(text, chars) {
+    const set = new Set(chars);
+    return [...text].map(ch => set.has(ch) ? `<mark>${esc(ch)}</mark>` : esc(ch)).join('');
+  }
+  const KIND = { 典故: '典故', 化用: '化用经典', 成词: '典籍成词', 相连: '同句相连', 同句: '同句取字', 各取: '各取一字' };
+  // 名字要展示的出处：“各取一字”时是两个字各自的句子，其余是两字同出的句子
+  const shownSrc = a => a.r && a.r.chuchu.kind === '各取' ? a.r.chuchu.each : a.src;
+  const srcHL = (s, given) => highlight(s.text, s.ch ? [s.ch] : given.map(c => c.c));
+  function srcCite(s) {
+    const t = s.title.split('·').pop();
+    return [s.author, `《${['诗经', '楚辞', '论语', '大学', '中庸', '孟子', '周易', '尚书', '礼记', '老子', '庄子', '荀子', '世说新语'].includes(s.book) ? s.book + '·' + t : t}》`].filter(Boolean).join(' ');
+  }
+
+  /* ---------- 一至三：八字、旺衰、喜用 ---------- */
+  function stepBazi(bz) {
+    const cols = bz.pillars;
+    const row = (lab, f, cls = '') => `<tr><td>${lab}</td>${cols.map(p => `<td class="${cls} ${p.name === '日' ? 'day' : ''}">${f(p)}</td>`).join('')}</tr>`;
+    return `<section class="step"><div class="step-no">一</div><div>
+      <h3>排八字<span class="s">${esc(bz.solar)} · ${esc(bz.lunar)} · 属${bz.shengxiao} · ${esc(bz.jieqi)}</span></h3>
+      <div class="tbl-wrap"><table class="pan">
+        <tr><th></th>${cols.map(p => `<th>${p.name}柱</th>`).join('')}</tr>
+        ${row('十神', p => p.ss, 'small')}
+        ${row('天干', p => `<span class="${WXC(p.wx[0])}">${p.gan}</span>`, 'gz')}
+        ${row('地支', p => `<span class="${WXC(p.wx[1])}">${p.zhi}</span>`, 'gz')}
+        ${row('五行', p => wxs(p.wx[0]) + wxs(p.wx[1]), 'small')}
+        ${row('藏干', p => p.hide.map(h => `<span class="${WXC(h.wx)}">${h.g}</span>${h.ss}`).join('<br>'), 'small')}
+        ${row('纳音', p => p.nayin, 'small')}
+        ${row('十二长生', p => p.dishi, 'small')}
+      </table></div>
+      ${bz.hourKnown ? tsNote(bz) : '<p class="hint" style="margin-top:8px">时辰未知，只排年、月、日三柱，五行判断会粗略一些。</p>'}
+    </div></section>`;
+  }
+  function tsNote(bz) {
+    const t = bz.ts;
+    if (!t) return '';
+    const hm = (h, mi) => `${String(h).padStart(2, '0')}:${String(mi).padStart(2, '0')}`;
+    const sign = v => (v >= 0 ? '+' : '−') + Math.abs(v).toFixed(1);
+    const lines = [];
+    if (t.applied) {
+      lines.push(`出生地${esc(t.place)}：${t.dst ? '1986–1991 年夏令时先减 60 分钟，' : ''}经度修正 ${sign(t.lngMin)} 分钟（按 120°E 每差 1° 差 4 分钟），均时差 ${sign(t.eot)} 分钟，真太阳时为 <b>${t.dayChanged ? `${t.m}月${t.d}日 ` : ''}${hm(t.h, t.mi)}</b>，${t.after}时。`);
+      if (t.before !== t.after) lines.push(`<span class="lv-凶">按北京时间是${t.before}时，换算后变为${t.after}时，时柱随之改变。</span>`);
+      if (t.dayChanged) lines.push('<span class="lv-凶">换算后跨了日期，日柱按换算后的日期排。</span>');
+    } else {
+      lines.push(`按北京时间排盘${t.dst ? '（已扣除 1986–1991 年夏令时 60 分钟）' : ''}，${t.after}时。选择出生地后可换算真太阳时，出生地离东经 120° 越远、时间越接近时辰交界，影响越大。${t.customBad ? '<span class="lv-凶">手动填写的经度无效（应在 70 到 140 之间），暂按北京时间计算。</span>' : ''}`);
+    }
+    if (t.h === 23) lines.push(bz.sect === 2 ? '23:00 后出生属晚子时，按“区分早晚子时”的做法，日柱仍按当天排，时柱用次日的子时。' : '23:00 后出生属子时，按传统做法已换日，日柱按次日排。另一派认为 23:00–24:00 仍算当天，可在左侧“子时出生的日柱”切换对比。');
+    if (t.nearEdge) lines.push(`<span class="lv-半吉">出生时间距离时辰交界不到 10 分钟，记录时间稍有误差就可能落到相邻时辰，建议核对出生证明上的时间。</span>`);
+    return `<div class="tsnote">${lines.map(l => `<p>${l}</p>`).join('')}</div>`;
+  }
+  function stepWangshuai(bz) {
+    const max = Math.max(...E.WX.map(w => bz.power[w]), 1);
+    const bars = bz.sorted.map(w => `<div class="bar"><span class="${WXC(w)}">${w}</span>
+      <span class="track"><span class="fill" style="width:${(bz.power[w] / max * 100).toFixed(0)}%;background:var(--w-${WXVAR[w]})"></span></span>
+      <span class="num">${bz.count[w]} 个 · 力量 ${bz.power[w].toFixed(1)}<span class="state">${bz.ws[w]}</span></span></div>`).join('');
+    const pct = Math.round(bz.ratio * 100);
+    return `<section class="step"><div class="step-no">二</div><div>
+      <h3>五行旺衰<span class="s">日主 ${bz.dayGan}${bz.me} · ${bz.strong}</span></h3>
+      <div class="wx-grid">
+        <div class="bars">${bars}
+          <p class="hint">右侧小字为当月五行状态：旺、相、休、囚、死（${bz.mz}月月令${bz.ling}旺）。${bz.missing.length ? `八字缺${bz.missing.join('、')}。` : '五行俱全。'}</p>
+        </div>
+        <div>
+          <div class="meter" role="img" aria-label="生扶日主的力量占 ${pct}%"><span class="fill" style="width:${pct}%"></span><span class="mid"></span></div>
+          <div class="meter-lab"><span>身弱</span><span>生扶占 ${pct}%</span><span>身强</span></div>
+          <ol class="reasons" style="margin-top:10px">${bz.reasons.map(r => `<li>${esc(r)}</li>`).join('')}</ol>
+          ${bz.rel.length ? `<div class="meta-line" style="margin-top:10px">${bz.rel.map(r => `<span class="tag">${esc(r.short)}</span>`).join('')}</div>` : '<p class="hint" style="margin-top:8px">四柱之间没有明显的刑冲合会。</p>'}
+        </div>
+      </div>
+    </div></section>`;
+  }
+  function stepXiyong(bz) {
+    const box = (w, lab, cls) => `<div class="box ${cls}"><b class="${WXC(w)}">${w}</b><span>${lab}</span></div>`;
+    return `<section class="step"><div class="step-no">三</div><div>
+      <h3>定喜用神<span class="s">格局：${esc(bz.geju)}</span></h3>
+      <div class="shen">${box(bz.xi[0], '用神', 'use')}${box(bz.xi[1], '喜神', 'use')}${bz.th && bz.th.use ? box(bz.th.wx, '调候', 'use') : ''}${bz.ji.map(w => box(w, '忌神', '')).join('')}</div>
+      <p>${esc(bz.xiText)}</p>
+      <p><b>调候：</b>${esc(bz.tiaohou)}</p>
+      <p>${esc(bz.buque)}</p>
+      <p class="hint">取名时优先选用${bz.xi.concat(bz.th && bz.th.use ? [bz.th.wx] : []).join('、')}属性的字，避免${bz.ji.join('、')}属性的字。</p>
+    </div></section>`;
+  }
+
+  /* ---------- 四：吉祥笔画 ---------- */
+  function stepZodiac(bz, no) {
+    const zi = E.zodiacInfo(bz.yearZhi);
+    const an = z => `${E.zodiacInfo(z).animal}（${z}）`;
+    const lunarNote = bz.shengxiao !== zi.animal ? `（按农历正月初一换年则属${bz.shengxiao}；命理以立春换年，这里按属${zi.animal}论）` : '';
+    return `<section class="step"><div class="step-no">${no}</div><div>
+      <h3>生肖喜忌<span class="s">年柱${bz.pillars[0].gz}，属${zi.animal}${lunarNote}</span></h3>
+      <div class="tbl-wrap"><table>
+        <tr><th>关系</th><th>说明</th><th>取名用字</th></tr>
+        <tr><td class="lv-吉">三合</td><td>${zi.sanhe.concat(bz.yearZhi).sort().join('')}三合，与${zi.sanhe.map(an).join('、')}相合</td><td>宜用含这些生肖字形的字</td></tr>
+        <tr><td class="lv-吉">六合</td><td>${[bz.yearZhi, zi.liuhe].join('')}六合，与${an(zi.liuhe)}相合</td><td>宜用</td></tr>
+        <tr><td class="lv-吉">习性所喜</td><td>${esc(zi.habit.likeWhy)}</td><td>宜用 ${zi.likeRads.join('、')} 旁</td></tr>
+        <tr><td class="lv-凶">六冲</td><td>${[zi.chong, bz.yearZhi].join('')}相冲，与${an(zi.chong)}相冲</td><td>忌用</td></tr>
+        <tr><td class="lv-凶">六害</td><td>${[zi.hai, bz.yearZhi].join('')}相害，与${an(zi.hai)}相害</td><td>忌用</td></tr>
+        ${zi.dislikeRads.length ? `<tr><td class="lv-凶">习性所忌</td><td>${esc(zi.habit.dislikeWhy)}</td><td>忌用 ${zi.dislikeRads.join('、')} 旁</td></tr>` : ''}
+      </table></div>
+      <p class="hint" style="margin-top:8px">生肖喜忌是民间姓名学的说法，各家出入较大，所以只作为一个分量较小的评分项（默认权重 10），不直接淘汰任何字。与八字喜用冲突时，以八字为先${bz.yearZhi === '午' ? '，例如有说法认为属马忌水旁（子午相冲），本工具只对含“子”的字减分' : ''}。</p>
+    </div></section>`;
+  }
+  function stepStrokes(st, no) {
+    const sur = st.ctx.surname.chars;
+    const formula = st.len === 2
+      ? `天格 = ${sur.length === 1 ? `${sur[0].c}${sur[0].kx} + 1` : sur.map(c => c.c + c.kx).join(' + ')}；人格 = ${sur[sur.length - 1].c}${sur[sur.length - 1].kx} + 名一；地格 = 名一 + 名二；外格 = ${sur.length === 1 ? '名二 + 1' : sur[0].c + sur[0].kx + ' + 名二'}；总格 = 全名笔画之和`
+      : `天格 = ${sur.map(c => c.c + c.kx).join(' + ')}${sur.length === 1 ? ' + 1' : ''}；人格 = ${sur[sur.length - 1].c}${sur[sur.length - 1].kx} + 名；地格 = 名 + 1；外格 = ${sur.length === 1 ? '2' : sur[0].c + sur[0].kx + ' + 1'}；总格 = 全名笔画之和`;
+    const nBig = st.combos.filter(c => c.w.verdict === '大吉').length;
+    const nJi = st.combos.filter(c => c.w.verdict === '吉').length;
+    const modeText = st.strokeMode === 'strict' ? `共有 <b>${nBig}</b> 组大吉、<b>${nJi}</b> 组吉的笔画组合，只在这些组合中选名。`
+      : st.strokeMode === 'loose' ? `已放宽为“人格、总格不是凶数”，共 <b>${st.combos.length}</b> 组，其中大吉 ${nBig} 组、吉 ${nJi} 组，其余为中平或欠佳（地格、外格或三才有不足），会在评分中体现。`
+      : `已设为不限，五格三才只参与评分。下表仅列出大吉、吉的组合供参考（${nBig + nJi} 组）。`;
+    const rows = st.combos.map(c => {
+      const g = c.w.ge, sc = c.w.sancai;
+      const avail = st.comboAvail[c.key] || 0;
+      return `<tr class="pick ${st.comboFilter === c.key ? 'on' : ''}" data-combo="${c.key}" tabindex="0">
+        <td class="num"><b>${c.g.join(' + ')}</b></td>
+        <td class="num">${g.人格.n}<span class="lv-${g.人格.level}">${g.人格.level}</span></td>
+        <td class="num">${g.地格.n}<span class="lv-${g.地格.level}">${g.地格.level}</span></td>
+        <td class="num">${g.外格.n}<span class="lv-${g.外格.level}">${g.外格.level}</span></td>
+        <td class="num">${g.总格.n}<span class="lv-${g.总格.level}">${g.总格.level}</span></td>
+        <td>${sc.wx.map(wxs).join('')} <span class="lv-${sc.level}">${sc.level}</span></td>
+        <td class="lv-${c.w.verdict}">${c.w.verdict}</td>
+        <td class="num">${avail}</td></tr>`;
+    }).join('');
+    return `<section class="step"><div class="step-no">${no}</div><div>
+      <h3>按姓氏筛选吉祥笔画<span class="s">${st.ctx.surname.s}：${sur.map(c => `${c.c}（${c.trad || c.c}）康熙 ${c.kx} 画`).join('，')}</span></h3>
+      <p class="hint">${esc(formula)}</p>
+      <p style="margin-top:8px">在 1 至 32 画范围内枚举，${modeText}点击某一行，只看这组笔画的名字。</p>
+      <div class="combo-wrap" style="margin-top:10px"><table>
+        <tr><th>名字笔画</th><th>人格</th><th>地格</th><th>外格</th><th>总格</th><th>三才</th><th>等级</th><th class="num">入选名字</th></tr>
+        ${rows || '<tr><td colspan="8">没有吉祥组合</td></tr>'}
+      </table></div>
+    </div></section>`;
+  }
+
+  /* ---------- 五：选字 ---------- */
+  function stepChars(st, no) {
+    const bz = st.ctx.bazi;
+    const groups = bz ? [[bz.xi[0], '用神'], [bz.xi[1], '喜神']] : [];
+    const zi = bz ? E.zodiacInfo(bz.yearZhi) : null;
+    const usedKx = new Set(st.combos.flatMap(c => c.g));
+    const pool = st.pool.filter(c => !st.strokeOnly || usedKx.has(c.kx));
+    const grp = (wx, lab) => {
+      const cs = pool.filter(c => c.wx === wx).sort((a, b) => a.kx - b.kx);
+      return `<div class="grp"><span>${lab} ${wxs(wx)}<br><span class="hint">${cs.length} 字</span></span><div>${cs.map(c => {
+        const zh = zi ? E.zodiacChar(c, zi) : [];
+        const zc = zh.some(h => !h.good) ? 'zx-bad' : zh.some(h => h.good) ? 'zx-good' : '';
+        return `<span class="cz ${zc}" title="${esc(c.mean + (zh.length ? '；' + zh.map(h => h.t).join('；') : ''))}">${c.c}<sub>${c.kx}</sub></span>`;
+      }).join('') || '<span class="hint">无</span>'}</div></div>`;
+    };
+    const other = bz ? pool.filter(c => !bz.xi.includes(c.wx) && !bz.ji.includes(c.wx)).length : pool.length;
+    return `<section class="step"><div class="step-no">${no}</div><div>
+      <h3>选用补益五行的字<span class="s">右下角数字为康熙笔画${zi ? `；<span class="zx-good">绿色下划线</span>为属${zi.animal}所喜，<span class="zx-bad">灰色</span>为所忌` : ''}</span></h3>
+      <div class="charset">${bz ? groups.map(([w, l]) => grp(w, l)).join('') : '<p class="hint">没有出生时间，不按五行选字。</p>'}</div>
+      <p class="hint" style="margin-top:10px">${st.trendRemoved ? `已排除网红字 ${st.trendRemoved} 个。` : ''}另有中性五行的字 ${other} 个，可与喜用字搭配。所有字均为常用规范字，按${st.ctx.female ? '女孩' : '男孩'}名用字筛选。</p>
+    </div></section>`;
+  }
+
+  /* ---------- 六：候选名 ---------- */
+  function moveTag(it) {
+    const p = state.prev;
+    if (!p) return '';
+    const o = p[it.name];
+    if (!o) return '<div class="move up">新入选</div>';
+    const dr = o.rank - it.rank, ds = it.r.total - o.r.total;
+    if (!dr && !ds) return '';
+    const parts = [];
+    if (dr) parts.push(`${dr > 0 ? '上升' : '下降'} ${Math.abs(dr)} 名`);
+    if (ds) parts.push(`分数 ${o.r.total} → ${it.r.total}`);
+    return `<div class="move ${dr > 0 || (!dr && ds > 0) ? 'up' : 'down'}">${parts.join('，')}</div>`;
+  }
+  const DUP_CLS = { 爆款: '凶', 很常见: '凶', 常见: '半吉', 较少: '吉', 少见: '吉', 罕见: '吉' };
+  function dupTag(r) {
+    const d = r.bikeng.dup;
+    return d && d.level ? `<span class="tag" title="${d.count == null ? '' : `120 万人名样本中 ${d.count} 人`}">重名<span class="lv-${DUP_CLS[d.level]}">${d.level}</span></span>` : '';
+  }
+  function dupSection(given, r) {
+    const d = r.bikeng.dup;
+    if (!d || d.count == null) return '';
+    const g = d.g;
+    const sex = d.fem < 0 || d.count < 5 ? '' : d.fem >= 75 ? '，样本中多为女性' : d.fem <= 25 ? '，样本中多为男性' : `，样本中男女都有（女性约 ${d.fem}%）`;
+    const head = d.hot ? `<p><b class="lv-凶">「${g}」是近年新生儿的热门名字</b>，同龄人中重名会很多。</p>` : '';
+    const line = d.count ? `在 ${(d.total / 10000).toFixed(0)} 万个人名样本中，有 <b>${d.count}</b> 人名为「${g}」（<span class="lv-${DUP_CLS[d.level]}">${d.level}</span>）${sex}。`
+      : `在 ${(d.total / 10000).toFixed(0)} 万个人名样本中，没有人名为「${g}」（不足 3 人的不计），<span class="lv-吉">很少见</span>。`;
+    const chars = d.chars.map(c => `<li>「${c.c}」${c.count ? `在样本名字中出现 ${c.count} 次，常用度排第 ${c.rank} 位（共 ${d.nchars} 字）` : '在样本名字中很少出现'}${c.rising ? '，<span class="lv-半吉">近两年新生儿中热度上升</span>' : ''}</li>`).join('');
+    return `<div class="sec"><h3>重名参考<span class="s">${d.level}</span></h3>${head}<p>${line}</p><ul style="margin-top:6px">${chars}</ul>
+      <p class="hint" style="margin-top:6px">样本来自公开的“120 万中文人名”语料（有效约 114 万），覆盖各年龄段、偏重成年人；近年热门名来自公安部《全国姓名报告》（2019–2021 年），以及 2024、2025 年四川、成都、云南、福州、烟台、淮安等地公安部门公布的数据（全国报告 2022 年后未再发布）。同姓同名的准确人数可向当地户籍部门咨询。</p></div>`;
+  }
+  /* ---------- 读音试听（浏览器自带语音） ---------- */
+  const TTS = 'speechSynthesis' in window && typeof SpeechSynthesisUtterance === 'function';
+  let zhVoice = null;
+  function pickVoice() {
+    if (!TTS) return;
+    const vs = speechSynthesis.getVoices();
+    zhVoice = vs.find(v => /^zh[-_]CN/i.test(v.lang) && /xiaoxiao|yunxi|tingting|huihui|mandarin|普通话|中文/i.test(v.name)) || vs.find(v => /^zh[-_]CN/i.test(v.lang)) || vs.find(v => /^zh/i.test(v.lang) && !/HK|TW/i.test(v.lang)) || null;
+  }
+  if (TTS) { pickVoice(); speechSynthesis.addEventListener && speechSynthesis.addEventListener('voiceschanged', pickVoice); }
+  const SPK = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/></svg>';
+  const sayBtn = (full, mode, label) => TTS ? `<button class="icon-btn say" data-say="${esc(full)}" data-mode="${mode || 'name'}" type="button" title="用设备的中文语音朗读">${SPK}${label || '听'}</button>` : '';
+  function say(full, mode, btn) {
+    if (!TTS) return;
+    speechSynthesis.cancel();
+    document.querySelectorAll('.say.on').forEach(b => b.classList.remove('on'));
+    const text = mode === 'call' ? `下面请${full}同学来回答这个问题。${full}。` : mode === 'slow' ? [...full].join('，') + '。' + full : full;
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = 'zh-CN'; u.rate = mode === 'slow' ? 0.7 : 0.85;
+    if (zhVoice) u.voice = zhVoice;
+    if (btn) { btn.classList.add('on'); u.onend = u.onerror = () => btn.classList.remove('on'); }
+    speechSynthesis.speak(u);
+  }
+  document.addEventListener('click', e => {
+    const b = e.target.closest('[data-say]'); if (!b) return;
+    e.stopPropagation(); say(b.dataset.say, b.dataset.mode, b);
+  }, true);
+  function sayBox(full) {
+    if (!TTS) return '<p class="hint">这个浏览器不支持语音朗读。</p>';
+    return `<div class="row" style="gap:6px;flex-wrap:wrap">${sayBtn(full, 'name', '朗读全名')}${sayBtn(full, 'slow', '逐字慢读')}${sayBtn(full, 'call', '模拟老师点名')}</div>
+      <p class="hint" style="margin-top:6px">由设备自带的中文语音朗读${zhVoice ? '' : '（这台设备没有找到中文语音，可能读不准，可在系统设置里添加“中文（普通话）”语音）'}。多音字可能读错，以上面标注的拼音为准。</p>`;
+  }
+  /* ---------- 快速挑名：随机出名字，喜欢 / 跳过，学习口味 ---------- */
+  let pickCur = null, pickHist = [], pickShowScore = false, tasteDirty = false, pickResetOpen = false;
+  function pickReset(removeFavs) {
+    if (removeFavs) { const pf = new Set(store.get('pickFavs', [])); favs = favs.filter(f => !pf.has(f)); store.set('favs', favs); updateFavCount(); }
+    store.set('taste', null); store.set('pickSeen', []); store.set('pickFavs', []);
+    pickHist = []; tasteDirty = true; pickCur = null; pickResetOpen = false; renderPick();
+  }
+  const RADN = { 85: '氵', 140: '艹', 75: '木', 96: '玉', 72: '日', 173: '雨', 46: '山', 120: '纟', 118: '竹', 115: '禾', 38: '女', 86: '火', 167: '金', 32: '土', 61: '心', 149: '言', 9: '亻', 130: '月', 74: '月', 64: '扌', 162: '辶', 40: '宀', 181: '页', 196: '鸟', 124: '羽', 187: '马', 60: '彳', 59: '彡', 53: '广', 170: '阜', 163: '邑', 113: '示', 145: '衣', 112: '石', 15: '冫', 47: '川', 4: '丿', 1: '一', 10: '儿', 31: '囗', 42: '小', 106: '白', 119: '米', 159: '车', 184: '食', 195: '鱼', 177: '革' };
+  const pickGroup = it => E.tasteGroup(it.r.chuchu.kind);
+  function pickPool() {
+    if (!state) return [];
+    const seen = new Set(), out = [];
+    [...(state.aiGen || []), ...(state.picks || []), ...state.classic, ...(state.each || []), ...(state.len === 1 ? state.other.filter(it => E.isGoodChar(it.name)).slice(0, 100) : state.other.slice(0, 150))].forEach(it => {
+      if (seen.has(it.name) || it.r.bikeng.warn.length || hidden.has(state.ctx.surname.s + it.name)) return;
+      seen.add(it.name); out.push(it);
+    });
+    return out;
+  }
+  function nextPick() {
+    const pool = pickPool(); if (!pool.length) return null;
+    let seenList = store.get('pickSeen', []);
+    let cand = pool.filter(it => !seenList.includes(it.name) && !favs.includes(state.ctx.surname.s + it.name));
+    if (!cand.length) { store.set('pickSeen', []); cand = pool.filter(it => !favs.includes(state.ctx.surname.s + it.name)); if (!cand.length) return null; }
+    const taste = store.get('taste', null);
+    const explore = !taste || taste.n < 10 || Math.random() < 0.3;
+    const recent = new Set(pickHist.slice(-5).flatMap(h => h.it.given.map(c => c.c)));
+    const w = cand.map(it => {
+      let x = Math.pow(Math.max(0.05, (it.r.total - 45) / 55), 2);
+      if (!explore) x *= Math.exp(E.tasteDelta(it.given, taste, pickGroup(it)) / 2.5);
+      it.given.forEach(c => { if (recent.has(c.c)) x *= 0.3; });
+      return x;
+    });
+    let r = Math.random() * w.reduce((a, b) => a + b, 0);
+    for (let i = 0; i < cand.length; i++) { r -= w[i]; if (r <= 0) return cand[i]; }
+    return cand[cand.length - 1];
+  }
+  function pickVote(like) {
+    if (!pickCur) return;
+    const it = pickCur, full = state.ctx.surname.s + it.name;
+    const taste = E.tasteUpdate(store.get('taste', null), it.given, pickGroup(it), like);
+    store.set('taste', taste); tasteDirty = true;
+    const added = like && !favs.includes(full);
+    if (added) { favs.push(full); store.set('favs', favs); updateFavCount(); store.set('pickFavs', [...store.get('pickFavs', []).filter(f => f !== full), full]); }
+    const seenList = store.get('pickSeen', []); seenList.push(it.name); store.set('pickSeen', seenList.slice(-400));
+    pickHist.push({ it, like, added });
+    pickCur = nextPick(); renderPick(like ? 'r' : 'l');
+  }
+  function pickUndo() {
+    const h = pickHist.pop(); if (!h) return;
+    store.set('taste', E.tasteUpdate(store.get('taste', null), h.it.given, pickGroup(h.it), h.like, true)); tasteDirty = true;
+    if (h.added) { const f0 = state.ctx.surname.s + h.it.name; favs = favs.filter(f => f !== f0); store.set('favs', favs); updateFavCount(); store.set('pickFavs', store.get('pickFavs', []).filter(f => f !== f0)); }
+    store.set('pickSeen', store.get('pickSeen', []).filter(n => n !== h.it.name));
+    pickCur = h.it; renderPick();
+  }
+  function tasteSummary() {
+    const t = store.get('taste', null);
+    if (!t || t.n < 8) return `<p class="hint" style="margin-top:16px;text-align:center">再挑 ${Math.max(0, 8 - (t ? t.n : 0))} 个，就能看到你的口味总结。前 10 个完全随机，之后会更多按你的口味出名字。</p>`;
+    const top = (m, f, n, neg) => Object.entries(t[m] || {}).map(([k, v]) => [k, E.tasteW(t[m], k), v])
+      .filter(([, w, v]) => neg ? (w < -0.15 && v[1] >= 2) : (w > 0.2 && v[0] >= 1)).sort((a, b) => neg ? a[1] - b[1] : b[1] - a[1]).slice(0, n).map(([k]) => f(k));
+    const likeC = top('c', k => k, 10), skipC = top('c', k => k, 8, true);
+    const likeR = top('r', k => RADN[k] ? RADN[k] + '旁' : '', 5).filter(Boolean), likeT = top('t', k => k, 2), likeK = top('k', k => ({ 典故: '典故名', 各取: '字字有出处', 精选: '精选好名', 其他: '自由组合' }[k] || k), 2);
+    const chip = (arr, neg) => arr.map(x => `<span class="${neg ? 'neg' : ''}">${esc(x)}</span>`).join('');
+    return `<div class="panel taste"><b>你的口味</b><span class="hint">　根据已挑的 ${t.n} 个名字，会自动影响“测算起名”里的排序</span>
+      ${likeC.length ? `<div style="margin-top:8px">偏爱的字</div><div class="row2">${chip(likeC)}</div>` : ''}
+      ${likeR.length ? `<div style="margin-top:8px">偏爱的偏旁</div><div class="row2">${chip(likeR)}</div>` : ''}
+      ${likeT.length ? `<div style="margin-top:8px">偏爱的声调</div><div class="row2">${chip(likeT)}</div>` : ''}
+      ${likeK.length ? `<div style="margin-top:8px">偏爱的类型</div><div class="row2">${chip(likeK)}</div>` : ''}
+      ${skipC.length ? `<div style="margin-top:8px">常跳过的字</div><div class="row2">${chip(skipC, true)}</div>` : ''}
+      <div class="row" style="margin-top:10px"><button class="icon-btn" data-taste-reset="1" type="button">重置口味</button></div></div>`;
+  }
+  function renderPick(dir) {
+    const box = $('#pickOut');
+    if (!state) { const c0 = DATA ? buildCtx() : {}; box.innerHTML = c0.blank ? '<div class="empty">先在“测算起名”的条件里填写姓氏、选择性别，这里就会开始出名字。</div>' : '<div class="loading">正在准备名字…</div>'; return; }
+    if (!pickCur) pickCur = nextPick();
+    loadWriteFonts();
+    const t = store.get('taste', null), liked = pickHist.filter(h => h.like).length;
+    const pf = store.get('pickFavs', []).filter(f => favs.includes(f));
+    const head = `<div class="pick-top"><span class="hint">本次已看 ${pickHist.length} 个，喜欢 ${liked} 个${t && t.n ? ` · 累计挑过 ${t.n} 个` : ''}</span>
+      <span class="row" style="gap:10px"><label class="check"><input type="checkbox" id="pickScore" ${pickShowScore ? 'checked' : ''}> 显示评分</label>
+      ${(t && t.n) || pickHist.length ? '<button class="icon-btn" data-pick-reset="1" type="button">重置</button>' : ''}</span></div>
+      ${pickResetOpen ? `<div class="panel" style="margin-bottom:12px;border-color:var(--seal)"><b>重置快速挑名</b>
+        <p class="hint" style="margin-top:4px">会清空记住的口味和“已看过”的名字，从头开始随机。“测算起名”的排序也会恢复不带口味的状态。</p>
+        <div class="row" style="margin-top:8px;gap:8px;flex-wrap:wrap">
+          <button class="ghost" data-pick-reset-do="keep" type="button">重置口味，保留收藏</button>
+          ${pf.length ? `<button class="ghost" data-pick-reset-do="all" type="button">重置口味，并移出挑中的 ${pf.length} 个收藏</button>` : ''}
+          <button class="icon-btn" data-pick-reset-cancel="1" type="button">取消</button></div></div>` : ''}`;
+    if (!pickCur) { box.innerHTML = `<div class="pick-wrap">${head}<div class="empty">没有更多符合条件的名字了。可以放宽左侧的用字五行或笔画要求。</div>${tasteSummary()}</div>`; return; }
+    const it = pickCur, ctx = state.ctx, xi = ctx.bazi ? ctx.bazi.xi : [];
+    const s = shownSrc(it)[0];
+    const d = it.r.bikeng.dup;
+    const chips = [it.given.some(c => xi.includes(c.wx)) ? '合喜用五行' : '', d && d.level ? '重名' + d.level : '', pickShowScore ? `${it.r.total} 分 · ${it.r.grade.label}` : ''].filter(Boolean);
+    box.innerHTML = `<div class="pick-wrap">${head}
+      <div class="pcard" id="pcard" ${dir ? `style="opacity:0;transform:translateX(${dir === 'r' ? '-' : ''}30px)"` : ''}>
+        <span class="stamp l">跳过</span><span class="stamp r">喜欢</span>
+        <div class="big f-kai">${esc(ctx.surname.s + it.name)}</div>
+        <div class="py">${[...ctx.surname.chars, ...it.given].map(c => esc(c.py)).join(' ')}</div>
+        <div class="means">${it.given.map(c => `<div><b>${esc(c.c)}</b>${esc(c.mean || '')}</div>`).join('')}</div>
+        ${s ? `<div class="src">${s.ch ? `<b>${esc(s.ch)}</b>　` : ''}${srcHL(s, it.given)}<cite>${esc(s.book)} · ${esc(srcCite(s))}</cite></div>` : ''}
+        <div class="chips">${chips.map(x => `<span>${esc(x)}</span>`).join('')}</div>
+      </div>
+      <div class="pick-btns"><button class="skip" data-pick="0" type="button">跳过</button><button class="like" data-pick="1" type="button">喜欢</button></div>
+      <div class="pick-sub">${sayBtn(ctx.surname.s + it.name, 'name', '听读音')}<button class="icon-btn" data-pick-detail="1" type="button">看详情</button>${pickHist.length ? '<button class="icon-btn" data-pick-undo="1" type="button">撤销上一个</button>' : ''}</div>
+      <p class="hint" style="text-align:center;margin-top:8px">左右滑动卡片也可以：右滑喜欢，左滑跳过。喜欢的名字会自动加入收藏。</p>
+      ${tasteSummary()}</div>`;
+    const card = $('#pcard');
+    if (dir) requestAnimationFrame(() => { card.style.opacity = ''; card.style.transform = ''; });
+    // 滑动
+    let x0 = null, dx = 0;
+    card.addEventListener('pointerdown', e => { x0 = e.clientX; dx = 0; card.classList.add('drag'); card.setPointerCapture(e.pointerId); });
+    card.addEventListener('pointermove', e => {
+      if (x0 == null) return; dx = e.clientX - x0;
+      card.style.transform = `translateX(${dx}px) rotate(${dx / 25}deg)`;
+      card.querySelector('.stamp.r').style.opacity = Math.max(0, Math.min(1, dx / 90));
+      card.querySelector('.stamp.l').style.opacity = Math.max(0, Math.min(1, -dx / 90));
+    });
+    const end = () => {
+      if (x0 == null) return; x0 = null; card.classList.remove('drag');
+      if (Math.abs(dx) > 90) { card.style.transform = `translateX(${dx > 0 ? 600 : -600}px) rotate(${dx / 10}deg)`; card.style.opacity = '0'; setTimeout(() => pickVote(dx > 0), 180); }
+      else { card.style.transform = ''; card.querySelectorAll('.stamp').forEach(s => { s.style.opacity = 0; }); }
+    };
+    card.addEventListener('pointerup', end); card.addEventListener('pointercancel', end);
+  }
+  $('#pickOut').addEventListener('click', e => {
+    const b = e.target.closest('[data-pick]'); if (b) { pickVote(b.dataset.pick === '1'); return; }
+    if (e.target.closest('[data-pick-undo]')) { pickUndo(); return; }
+    if (e.target.closest('[data-pick-detail]') && pickCur) { openDetail(state.ctx.surname.s + pickCur.name); return; }
+    if (e.target.closest('[data-taste-reset]') || e.target.closest('[data-pick-reset]')) { pickResetOpen = true; renderPick(); window.scrollTo({ top: $('#pickOut').getBoundingClientRect().top + window.scrollY - 12, behavior: 'smooth' }); return; }
+    if (e.target.closest('[data-pick-reset-cancel]')) { pickResetOpen = false; renderPick(); return; }
+    const rd = e.target.closest('[data-pick-reset-do]'); if (rd) { pickReset(rd.dataset.pickResetDo === 'all'); return; }
+  });
+  $('#pickOut').addEventListener('change', e => { if (e.target.id === 'pickScore') { pickShowScore = e.target.checked; renderPick(); } });
+  document.addEventListener('keydown', e => {
+    if ($('#tab-pick').hidden || !$('#sheet').hidden || /INPUT|TEXTAREA|SELECT/.test((document.activeElement || {}).tagName || '')) return;
+    if (e.key === 'ArrowRight') pickVote(true); else if (e.key === 'ArrowLeft') pickVote(false);
+  });
+
+  /* ---------- 书写效果：字体按需加载（离线版字体内嵌在页面里） ---------- */
+  const WFONTS = [['NameKai', 'wenkai'], ['NameBrush', 'mashanzheng'], ['NameHand', 'longcang']];
+  let fontsReq = null;
+  function loadWriteFonts() {
+    if (fontsReq || typeof FontFace !== 'function') return fontsReq;
+    fontsReq = Promise.all(WFONTS.map(([fam, f]) => {
+      const el = document.getElementById('font-' + f);
+      const src = el ? `url(data:font/woff2;base64,${el.textContent.trim()})` : `url(fonts/${f}.woff2)`;
+      return new FontFace(fam, src).load().then(ff => document.fonts.add(ff)).catch(() => {});
+    }));
+    return fontsReq;
+  }
+  function writingSection(sur, given) {
+    loadWriteFonts();
+    const full = [...sur, ...given].map(c => c.c).join('');
+    const styles = [['f-kai', '楷体 · 霞鹜文楷'], ['f-brush', '毛笔行楷 · 马善政'], ['f-hand', '手写 · 龙藏'], ['f-song', '宋体（印刷）'], ['f-hei', '黑体（屏幕）']];
+    return `<div class="sec"><h3>书写效果<span class="s">看名字写出来匀不匀称</span></h3>
+      <div class="wprev">${styles.map(([cls, lab]) => `<div class="w"><b class="${cls}">${esc(full)}</b><span>${lab}</span></div>`).join('')}</div>
+      <div class="tzg f-kai" aria-label="田字格">${[...full].map(ch => `<i>${esc(ch)}</i>`).join('')}</div>
+      <div class="cover"><div class="t f-kai">语文作业本</div>
+        <div class="ln"><span>姓名</span><b class="f-hand">${esc(full)}</b></div>
+        <div class="ln"><span>班级</span><b class="f-hand">&nbsp;</b></div></div>
+      <p class="hint" style="margin-top:8px">楷体、毛笔、手写三种字体为开源字体（SIL OFL），只包含本工具用到的字；少数近年流行的字（如玥、璟）毛笔和手写字体里没有，会用楷体代替。</p>
+    </div>`;
+  }
+  function card(it) {
+    const ctx = state.ctx, xi = ctx.bazi ? ctx.bazi.xi : [];
+    const full = ctx.surname.s + it.name;
+    const fav = favs.includes(full);
+    const g = it.r.wuge.ge;
+    const s = it.src[0];
+    const src = it.r.chuchu.kind === '各取'
+      ? it.r.chuchu.each.map(e => `<p class="src"><b>${esc(e.ch)}</b>　${srcHL(e)}<cite>${esc(e.book)} · ${esc(srcCite(e))}</cite></p>`).join('')
+      : s ? `<p class="src">${highlight(s.text, it.given.map(c => c.c))}<cite>${KIND[it.r.chuchu.kind]} · ${esc(srcCite(s))}</cite></p>` : '<p class="src none">无典籍出处，按字义与五行组合</p>';
+    const aiLine = it.aiMeaning ? `<div class="ai"><span class="aitag v-推荐">AI 起名</span>${esc(it.aiMeaning)}</div>` : '';
+    return `<article class="card" data-name="${esc(it.name)}" tabindex="0">
+      <div class="head"><div class="nm">${rubyName(ctx.surname.chars, it.given)}</div>
+        <div class="seal">${it.r.total}<small>${it.r.grade.g}等</small></div></div>
+      ${moveTag(it)}
+      <div class="meta-line">${it.given.map(c => `<span class="tag ${xi.includes(c.wx) ? 'hit' : ''}">${c.c} ${wxs(c.wx)} ${c.kx}画</span>`).join('')}</div>
+      <div class="meta-line"><span class="tag">人格${g.人格.n}<span class="lv-${g.人格.level}">${g.人格.level}</span></span><span class="tag">三才<span class="lv-${it.r.wuge.sancai.level}">${it.r.wuge.sancai.level}</span></span><span class="tag">综合 <span class="lv-${it.r.verdict}">${it.r.verdict}</span></span>${dupTag(it.r)}${it.r.shengxiao.bad ? `<span class="tag">生肖<span class="lv-凶">忌</span></span>` : it.r.shengxiao.good ? `<span class="tag hit">生肖宜</span>` : ''}</div>
+      ${src}
+      ${aiLine}
+      <div class="acts">
+        ${sayBtn(full)}
+        <button class="icon-btn" data-act="hide" type="button" title="不再显示这个名字">不喜欢</button>
+        ${famCanAdd() ? `<button class="icon-btn" data-act="vote" type="button" aria-pressed="${famHas(full)}">${famHas(full) ? '已在投票' : '加入投票'}</button>` : ''}
+        <button class="icon-btn" data-act="fav" type="button" aria-pressed="${fav}">${fav ? '已收藏' : '收藏'}</button>
+      </div></article>`;
+  }
+  let theme = '';
+  const themeOf = it => it.th || (it.th = E.themesOf(it.given));
+  function themeBar() {
+    const all = [...(state.aiGen || []), ...(state.picks || []), ...state.classic, ...(state.each || []), ...state.other]
+      .filter(it => !hidden.has(state.ctx.surname.s + it.name) && !(state.comboFilter && it.given.map(c => c.kx).join('-') !== state.comboFilter));
+    const n = {}; all.forEach(it => themeOf(it).forEach(k => { n[k] = (n[k] || 0) + 1; }));
+    const keys = Object.keys(E.THEMES).filter(k => n[k]).sort((a, b) => n[b] - n[a]);
+    return `<div class="theme-bar"><span class="hint">按意象看</span><div class="chips">
+      <button class="chip" type="button" data-th="" aria-pressed="${!theme}">全部</button>
+      ${keys.map(k => `<button class="chip" type="button" data-th="${k}" aria-pressed="${theme === k}">${E.THEMES[k]} <small>${n[k]}</small></button>`).join('')}</div></div>`;
+  }
+  function visible(list, keepBad) {
+    const out = list.filter(it => {
+      if (hidden.has(state.ctx.surname.s + it.name)) return false;
+      if (theme && !themeOf(it).has(theme)) return false;
+      return !(state.comboFilter && it.given.map(c => c.kx).join('-') !== state.comboFilter);
+    });
+    return out.sort((a, b) => b.r.total - a.r.total || a.rank - b.rank);
+  }
+  let showOther = false;
+  function stepNames() {
+    const no = state.ctx.bazi ? '七' : '四';
+    const each = visible(state.each || []);
+    const cls = visible(state.classic), oth = visible(state.other), gen = visible(state.aiGen || []), pk = visible(state.picks || []);
+    const zhiNow = state.ctx.bazi && state.ctx.bazi.hourKnown ? state.ctx.bazi.pillars[3].zhi + '时' : '';
+    const block = (id, title, note, list, n) => `
+      <div class="subhead"><h4>${title}</h4><span class="hint">${note}</span></div>
+      ${list.length ? `<div class="grid">${list.slice(0, n).map(card).join('')}</div>
+        ${list.length > n ? `<div class="more"><button class="ghost" data-more="${id}" type="button">再看 ${Math.min(12, list.length - n)} 个（共 ${list.length} 个）</button></div>` : ''}`
+        : '<div class="empty">这一类没有符合条件的名字。可以放宽左侧的用字五行、取消排除网红字，或换一组笔画。</div>'}`;
+    return `<section class="step" id="stepNames"><div class="step-no">${no}</div><div>
+      <h3>候选名字评分与评级<span class="s">点击名字查看五格剖象、三才研判和完整点评</span></h3>
+      ${aiBar()}
+      ${themeBar()}
+      ${state.comboFilter ? `<div class="filter-note"><span class="tag">只看笔画 ${state.comboFilter.replace('-', ' + ')}</span><button class="icon-btn" data-clear="1" type="button">显示全部</button></div>` : ''}
+      ${gen.length ? block('aiGen', 'AI 起名', 'Claude 按所选风格组名，程序已核对笔画和五行并完整打分', gen, state.shown.aiGen) + '<div style="height:18px"></div>' : ''}
+      ${state.pickTotal ? block('picks', '精选好名', `${state.len === 1 ? '人工挑选的单字名' : '人工挑选和同风格新拟的现代好名，好听好认'}，按性别、笔画和五行筛选后 ${pk.length} 个；出自经典的已归到典故名、字字有出处。网红字不排除，但会扣分提示`, pk, state.shown.picks) + '<div style="height:18px"></div>' : ''}
+      ${block('classic', '典故名', '两个字在同一句经典原文里连用（或化用原句），寓意完整', cls, state.shown.classic)}
+      <div style="height:18px"></div>
+      ${state.len === 2 ? block('each', '字字有出处', '两个字分别取自诗经、楚辞、唐诗宋词等不同原句，各有寓意，合起来再按八字、五格、音律打分', each, state.shown.each) + '<div style="height:18px"></div>' : ''}
+      ${showOther ? block('other', '其他组合', '程序按规则拼字，两字搭配质量参差，请自行斟酌', oth, state.shown.other) + '<div class="more"><button class="ghost" data-other="0" type="button">收起规则拼字的组合</button></div>'
+        : `<div class="more"><button class="ghost" data-other="1" type="button">展开规则拼字的组合（${oth.length} 个，搭配质量参差）</button></div>`}
+    </div></section>`;
+  }
+
+  function renderReport() {
+    const st = state, ctx = st.ctx, bz = ctx.bazi;
+    $('#report').innerHTML = `
+      <div class="report-head"><h2>${ctx.surname.s}姓${ctx.female ? '女孩' : '男孩'}起名测算报告</h2>
+        <span class="hint">${bz ? esc(bz.solar) + ' 出生' : '未填出生时间'} · ${st.len === 2 ? '双字名' : '单字名'} · ${E.STYLES[ctx.style].label}${st.updatedAt ? ` · <span class="updated">已按新条件重算 ${st.updatedAt.toTimeString().slice(0, 8)}</span>` : ''}</span></div>
+      <div class="steps">
+        ${bz ? stepBazi(bz) + stepWangshuai(bz) + stepXiyong(bz) + stepZodiac(bz, '四') : '<section class="step"><div class="step-no">一</div><div><h3>排八字</h3><p class="hint">填写出生日期后会排出八字、分析喜用神和生肖喜忌。</p></div></section>'}
+        ${stepStrokes(st, bz ? '五' : '二')}
+        ${stepChars(st, bz ? '六' : '三')}
+        ${stepNames()}
+      </div>`;
+  }
+  function renderNames() {
+    const el = $('#stepNames');
+    if (el) el.outerHTML = stepNames();
+    document.querySelectorAll('.combo-wrap tr.pick').forEach(tr => tr.classList.toggle('on', tr.dataset.combo === state.comboFilter));
+  }
+
+  function run(auto) {
+    const ctx = buildCtx();
+    if (ctx.error) { state = null; $('#report').innerHTML = `<div class="empty">${ctx.error}</div>`; if (ctx.blank && narrow.matches) setCollapsed(false); return; }
+    if (window.NAMER_STANDALONE) store.set('form', currentSettings());
+    const len = +segValue('len');
+    const fixedCh = $('#fixed').value.trim();
+    if (fixedCh && !charObj(fixedCh)) { $('#report').innerHTML = `<div class="empty">固定用字「${esc(fixedCh)}」不在常用字范围内。</div>`; return; }
+    const prev = auto && state ? Object.fromEntries([...(state.aiGen || []), ...(state.picks || []), ...(state.each || []), ...state.classic, ...state.other].map(it => [it.name, it])) : null;
+    if (auto && state) $('#report').style.opacity = '.5';
+    else $('#report').innerHTML = '<div class="loading">正在排盘、筛选笔画、组合打分…</div>';
+    const y = window.scrollY;
+    setTimeout(() => {
+      const strokeMode = $('#strokeMode').value;
+      const strokeOnly = strokeMode !== 'off';
+      const opt = {
+        len, fixed: fixedCh || null, fixedPos: +$('#fixedPos').value, exclude: $('#exclude').value,
+        onlyPoem: len === 2 && $('#onlyPoem').checked, wxRule: $('#wxRule').value, allowTrend: !$('#noTrend').checked, limit: 400,
+      };
+      const combos = strokeMode === 'loose' ? E.looseStrokes(ctx.surname.chars, len, ctx.female) : E.bestStrokes(ctx.surname.chars, len, ctx.female);
+      if (strokeOnly) opt.strokeSet = new Set(combos.map(c => c.key));
+      const pool = E.charPool(DATA, ctx, Object.assign({}, opt, { wxRule: 'off' }));
+      const poolAll = E.charPool(DATA, ctx, Object.assign({}, opt, { wxRule: 'off', allowTrend: true }));
+      const results = E.generate(DATA, POEMS, ctx, opt);
+      // 分组按名字的来历，每个名字只归一组：典故名 > 字字有出处 > 精选好名 > 规则拼字
+      const picksAll = E.genPicks(DATA, POEMS, ctx, opt);
+      const pickSet = new Set(picksAll.map(it => it.name));
+      const kindOf = it => it.r.chuchu.kind;
+      const isClassic = it => kindOf(it) === '典故' || kindOf(it) === '化用';
+      const merged = [...picksAll, ...results.filter(it => !pickSet.has(it.name))];
+      const picks = picksAll.filter(it => !isClassic(it) && kindOf(it) !== '各取');
+      const comboAvail = {};
+      results.forEach(it => { const k = it.given.map(c => c.kx).join('-'); comboAvail[k] = (comboAvail[k] || 0) + 1; });
+      state = {
+        ctx, len, combos, pool, strokeOnly, strokeMode, comboAvail, comboFilter: null,
+        trendRemoved: opt.allowTrend ? 0 : poolAll.length - pool.length,
+        classic: merged.filter(isClassic),
+        each: merged.filter(it => kindOf(it) === '各取'),
+        other: results.filter(it => !isClassic(it) && kindOf(it) !== '各取' && !pickSet.has(it.name)),
+        picks, pickTotal: (DATA.picks || []).filter(p => [...p[0]].length === len).length,
+        shown: { classic: 12, other: 12, aiGen: 12, picks: 12, each: 12 }, prev, updatedAt: auto ? new Date() : null,
+        opt,
+      };
+      state.aiGen = loadAiGen();
+      state.classic.forEach((it, i) => { it.rank = i; });
+      state.other.forEach((it, i) => { it.rank = i; });
+      state.picks.forEach((it, i) => { it.rank = i; });
+      state.each.forEach((it, i) => { it.rank = i; });
+      renderReport();
+      if (!$('#tab-pick').hidden) { pickCur = null; renderPick(); }
+      $('#report').style.opacity = '';
+      if (auto) window.scrollTo(0, y);
+    }, 30);
+  }
+
+  /* ---------- 详情 ---------- */
+  function scoreBar(k, v) {
+    return `<div class="bar"><span>${LABEL[k]}</span><span class="track"><span class="fill" style="width:${Math.round(v * 100)}%;background:var(--celadon)"></span></span><span class="num">${Math.round(v * 100)}</span></div>`;
+  }
+  function detailHTML(sur, given, src, r, ctx) {
+    const full = sur.map(c => c.c).join('') + given.map(c => c.c).join('');
+    const charRows = [...sur, ...given].map((c, i) => `<tr><td class="big">${c.c}</td><td>${c.py}</td><td>${i < sur.length ? '—' : `${wxs(c.wx)}<div class="hint">${esc(c.wxb || '')}</div>`}</td>
+        <td class="num">${c.stroke} / ${c.kx}${c.trad && c.trad !== c.c ? `（${c.trad}）` : ''}</td>
+        <td>${i < sur.length ? '姓氏' : c.mean ? esc(c.mean) : '<span class="hint">字库未收录释义</span>'}</td></tr>`).join('');
+    const ge = r.wuge.ge, sc = r.wuge.sancai;
+    const geRows = Object.entries(ge).map(([k, v]) => `<tr><td>${k}</td><td>${esc(v.formula)}</td><td class="num"><b>${v.n}</b></td><td>${wxs(v.wx)}</td><td class="lv-${v.level}">${k === '天格' ? '<span class="hint">不论</span>' : v.level}</td></tr>`).join('');
+    const geNotes = Object.entries(ge).map(([k, v]) => `<div><b>${k} ${v.n}</b>：${esc(v.meaning)}。数理「${esc(v.desc)}」，${k === '天格' ? '仅作参考' : `为<span class="lv-${v.level}">${v.level}</span>`}${v.note ? `（${esc(v.note)}）` : ''}。</div>`).join('');
+ const kindNote = { 典故: '两字在经典原文中连用，是典故名', 化用: '化用经典原句', 成词: '两字在典籍中多次连用', 相连: '两字在原句中相连，但未必成词', 同句: '两字只是出现在同一句中，取字而非取词' }[r.chuchu.kind];
+    const quoteHTML = (s, hl) => `<div class="quote">${highlight(s.text, hl)}<div class="hint">${esc([s.book, s.author, s.title].filter(Boolean).join(' · '))}</div></div>`;
+    const quotes = r.chuchu.kind === '各取'
+      ? given.map(c => `<p style="margin:10px 0 4px"><b>「${esc(c.c)}」</b><span class="hint">　${esc(c.mean || '')}</span></p>${E.charSources(POEMS, c.c).map(q => quoteHTML(q, [c.c])).join('')}`).join('')
+        + `<p class="hint" style="margin-top:8px">各取一字：两个字分别出自不同的典籍原句，各有寓意，合起来成名。第一句为主要出处，其余备选。${src && src.length ? `另外两字也同见于${esc(src[0].book)}「${esc(src[0].text)}」。` : ''}</p>`
+      : src && src.length ? src.map(s => `<div class="quote">${highlight(s.text, given.map(c => c.c))}<div class="hint">${esc([s.book, s.author, s.title].filter(Boolean).join(' · '))}</div></div>`).join('') + `<p class="hint" style="margin-top:8px">${kindNote}。</p>` : '<p class="hint">这个组合在收录的典籍里没有找到出处。</p>';
+    const bk = r.bikeng;
+    const bkList = [...bk.warn.map(w => `<li class="w">${esc(w)}</li>`), ...bk.info.map(w => `<li>${esc(w)}</li>`)];
+    const fav = favs.includes(full);
+    const deduct = bk.warn.length * 15 + Math.round(bk.hot * 3);
+    return `<div class="detail">
+      <div class="hero"><div class="nm">${rubyName(sur, given)}</div>${sayBtn(full, 'name', '听读音')}<div class="seal">${r.total}<small>总分</small></div>
+        <div class="gradebox"><b>${r.grade.label}</b><span>综合吉凶 <span class="lv-${r.verdict}">${r.verdict}</span></span></div>
+        <button class="ghost" data-fav="${esc(full)}" type="button">${fav ? '取消收藏' : '收藏这个名字'}</button>
+        ${famCanAdd() ? `<button class="ghost" data-addvote="${esc(full)}" type="button">${famHas(full) ? '已在家人投票中' : '加入家人投票'}</button>` : ''}</div>
+      <div class="sec"><h3>综合点评</h3><p class="comment">${esc(r.comment)}</p></div>
+      ${writingSection(sur, given)}
+      ${aiSection(full)}
+      <div class="sec"><h3>分项得分</h3><div class="scorebars">${Object.keys(LABEL).map(k => scoreBar(k, r[k].score)).join('')}</div>
+        ${r.fengge.delta || r.tagAdj || deduct ? `<p class="hint" style="margin-top:8px">${r.tagAdj ? `寓意契合 ${r.tagAdj > 0 ? '+' : ''}${r.tagAdj} 分。` : ''}${r.fengge.delta ? `风格调整 ${r.fengge.delta > 0 ? '+' : ''}${r.fengge.delta} 分。` : ''}${deduct ? `避坑扣 ${deduct} 分。` : ''}</p>` : ''}</div>
+      <div class="sec"><h3>字义与笔画<span class="s">笔画：简体 / 康熙</span></h3><div class="tbl-wrap"><table>
+        <tr><th>字</th><th>拼音</th><th>五行</th><th>笔画</th><th>释义</th></tr>${charRows}</table></div>
+        ${[...r.yuyi.notes, ...r.fengge.notes].length ? `<p class="hint" style="margin-top:8px">${esc([...r.yuyi.notes, ...r.fengge.notes].join('；'))}</p>` : ''}</div>
+      <div class="sec"><h3>典籍出处</h3>${quotes}</div>
+      <div class="sec"><h3>五行补益<span class="s">${ctx.bazi ? `喜用 ${ctx.bazi.xi.join('、')} · 忌 ${ctx.bazi.ji.join('、')}` : ''}</span></h3><ul>${r.wuxing.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul></div>
+      <div class="sec"><h3>生肖喜忌<span class="s">${ctx.bazi ? `属${ctx.bazi.animal}` : ''}</span></h3><ul>${r.shengxiao.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul></div>
+      <div class="sec"><h3>五格剖象<span class="s">康熙笔画</span></h3>
+        <div class="tbl-wrap"><table><tr><th>格</th><th>算式</th><th class="num">数</th><th>五行</th><th>吉凶</th></tr>${geRows}</table></div>
+        <div class="ge-notes">${geNotes}</div></div>
+      <div class="sec"><h3>三才研判<span class="s">天 ${sc.wx[0]} · 人 ${sc.wx[1]} · 地 ${sc.wx[2]}　<span class="lv-${sc.level}">${sc.level}</span></span></h3>
+        <ul><li>成功运（天格对人格，${sc.r1}）：${esc(sc.t1)}。</li><li>基础运（人格与地格，${sc.r2}）：${esc(sc.t2)}。</li></ul></div>
+      <div class="sec"><h3>音律<span class="s">${r.yinlv.pattern}</span></h3>
+        ${sayBox(full)}
+        <p>${[...sur, ...given].map((c, i) => `${c.c} ${c.py}（${['', '阴平', '阳平', '上声', '去声', '轻声'][r.yinlv.tones[i]]}）`).join('，')}</p>
+        <ul style="margin-top:6px">${r.yinlv.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul></div>
+      ${dupSection(given, r)}
+      <div class="sec warnbox"><h3>避坑检查<span class="s">拼音缩写 ${bk.abbr}</span></h3>
+        ${bkList.length ? `<ul>${bkList.join('')}</ul>` : '<p>没有发现谐音、缩写、多音字和重名问题。</p>'}
+        <p class="hint" style="margin-top:6px">${esc(r.zixing.notes.join('；'))}（简体总笔画 ${r.zixing.sum}）。方言谐音请自行判断。</p></div>
+    </div>`;
+  }
+  function analyze(full, ctx) {
+    const [s, g] = splitName(full);
+    const sur = resolveSurname(s);
+    const given = [...g].map(charObj);
+    if (!sur || !g || g.length > 2 || given.some(c => !c)) return null;
+    const src = g.length === 2 ? E.poemSources(POEMS, g) : [];
+    const r = E.evaluate(sur.chars, given, Object.assign({}, ctx, { surname: sur }), src);
+    return { sur: sur.chars, given, src, r, full: s + g };
+  }
+  function openDetail(full) {
+    const ctx = state ? state.ctx : buildCtx(true);
+    const a = analyze(full, ctx);
+    if (!a) return;
+    $('#sheetBody').innerHTML = detailHTML(a.sur, a.given, a.src, a.r, ctx);
+    $('#sheet').hidden = false; $('#sheetBg').hidden = false;
+    $('#sheet').scrollTop = 0;
+  }
+  function closeDetail() { $('#sheet').hidden = true; $('#sheetBg').hidden = true; }
+  $('#closeSheet').onclick = closeDetail; $('#sheetBg').onclick = closeDetail;
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDetail(); });
+
+  /* ---------- AI 起名与解读（Claude） ---------- */
+  let aiBusyLabel = '';
+  let sampleFn = null, aiBusy = false, aiCtl = null, aiMsg = '', aiDead = false;
+  const aiReviews = {}; // AI 把关已移除；保留空表，旧代码路径不再生效
+  store.set('aiReviews', {});
+  let aiTier = store.get('aiTier', 'default');
+  const deepCache = {};
+  const aiKey = full => `${state && state.ctx && state.ctx.female === false ? 'm' : 'f'}|${full}`;
+  if (window.claude && typeof window.claude.use === 'function') {
+    window.claude.use('sample').then(s => { sampleFn = s; if (state && !$('#tab-gen').hidden) renderNames(); }).catch(() => {});
+  }
+  function aiError(e) {
+    const c = e && e.code;
+    if (['not_granted', 'sampling_disabled', 'not_declared', 'capability_disabled', 'capability_removed'].includes(c)) { aiDead = true; return '当前无法使用 AI（未允许本页面调用 Claude，或账号不支持）。'; }
+    if (c === 'cancelled') return '';
+    if (c === 'rate_limited') return 'AI 调用太频繁或已达用量上限，请稍后再试。';
+    if (c === 'session_expired') return '登录已过期，请重新登录 claude.ai 后再试。';
+    if (c === 'invalid_json') return 'AI 返回的格式不完整，请再点一次。';
+    if (c === 'refused' || c === 'empty_completion') return 'AI 这次没有给出结果，请再试一次。';
+    if (c === 'prompt_too_large') return '内容太长，请减少后再试。';
+    return 'AI 服务暂时出错，请稍后再试。';
+  }
+  function aiBar() {
+    if (OFFLINE) return '';
+    if (!sampleFn || aiDead) return `<div class="aibar"><span class="hint">${aiDead ? esc(aiMsg) : 'AI 起名需要在 claude.ai 中打开本页面才能使用。'}</span></div>`;
+    return `<div class="aibar">
+      ${aiBusy ? `<span class="busy">${esc(aiBusyLabel)}</span><button class="ghost" data-ai="stop" type="button">停止</button>`
+        : `<button class="primary" data-ai="gen" type="button">AI 起名：按「${E.STYLES[state.ctx.style].label}」风格起 20 个</button>`}
+      <span class="hint">由 Claude 按八字喜用、笔画和风格起名，程序再核对打分。会使用你自己的 Claude 额度。</span>
+      <label class="hint" for="aiTier">AI 档位</label>
+      <select id="aiTier" aria-label="AI 档位">
+        <option value="quick" ${aiTier === 'quick' ? 'selected' : ''}>快速（几秒，适合粗筛）</option>
+        <option value="default" ${aiTier === 'default' ? 'selected' : ''}>标准（默认）</option>
+        <option value="complex" ${aiTier === 'complex' ? 'selected' : ''}>深度（最慢，判断最细）</option>
+      </select>
+      ${aiMsg ? `<span class="err">${esc(aiMsg)}</span>` : ''}
+    </div>`;
+  }
+  // AI 起名：结果按出生信息和条件分别保存在本机浏览器
+  const STYLE_BRIEF = {
+    qing: '清新自然、有画面感、读起来轻盈现代。不要说教味重的品德字（如德、恭、淑、贞、秉、懿），不要上一辈常见的字（如芳、秀、珍、国、建、丽），也不要梓涵、若汐这类网红名',
+    duan: '端庄大气、有书卷气和内涵，但不要老气横秋',
+    shi: '古典诗意，可以化用诗词意境',
+    any: '不限风格，好听、寓意好即可',
+  };
+  const genKey = () => { const c = currentSettings(); return [c.surname, c.sex, c.len, c.bdate, c.btime, c.place, c.lng, c.nohour, state.ctx.style, state.strokeMode, state.ctx.likedText].join('|'); };
+  function loadAiGen() {
+    const names = (store.get('aiGen', {})[genKey()] || []);
+    return names.map(([name, meaning], i) => {
+      const a = analyze(state.ctx.surname.s + name, state.ctx);
+      return a ? { name, given: a.given, src: a.src, r: a.r, rank: i, aiMeaning: meaning } : null;
+    }).filter(it => it && passesFilters(it.given));
+  }
+  function saveAiGen(list) {
+    const all = store.get('aiGen', {});
+    all[genKey()] = list.map(it => [it.name, it.aiMeaning]);
+    const keys = Object.keys(all); if (keys.length > 30) keys.slice(0, keys.length - 30).forEach(k => delete all[k]);
+    store.set('aiGen', all);
+  }
+  function allowedChars() {
+    const usedKx = new Set(state.combos.flatMap(c => c.g));
+    const bz = state.ctx.bazi;
+    return E.charPool(DATA, state.ctx, state.opt).filter(c => !state.strokeOnly || usedKx.has(c.kx)).filter(c => !(bz && state.opt.wxRule !== 'off' && bz.ji.includes(c.wx)))
+      .filter(c => state.ctx.style !== 'qing' || !E.STUFFY.has(c.c));
+  }
+  function passesFilters(given) {
+    if (given.length !== state.len) return false;
+    if (state.strokeOnly && !state.combos.some(c => c.key === given.map(x => x.kx).join('-'))) return false;
+    const bz = state.ctx.bazi;
+    if (bz && state.opt.wxRule === 'strict' && !given.every(c => bz.xi.includes(c.wx))) return false;
+    if (bz && state.opt.wxRule === 'balanced' && (!given.some(c => bz.xi.includes(c.wx)) || given.some(c => bz.ji.includes(c.wx)))) return false;
+    return true;
+  }
+  async function aiGenerate() {
+    if (aiBusy || !sampleFn) return;
+    const ctx = state.ctx, bz = ctx.bazi;
+    const chars = allowedChars();
+    if (!chars.length) { aiMsg = '当前条件下没有可用的字，请放宽左侧筛选条件。'; renderNames(); return; }
+    const byKx = {};
+    chars.forEach(c => { (byKx[c.kx] = byKx[c.kx] || []).push(c.c + (bz && bz.xi.includes(c.wx) ? '★' : '')); });
+    const existing = new Set([...(state.aiGen || []), ...state.classic, ...state.other.slice(0, 60)].map(it => it.name));
+    const prompt = `你是一位品味很好的中文起名顾问。请为一个姓「${ctx.surname.s}」的${ctx.female ? '女孩' : '男孩'}起 20 个${state.len === 2 ? '两字' : '单字'}名（不含姓）。
+风格要求：${STYLE_BRIEF[ctx.style] || STYLE_BRIEF.qing}。
+${ctx.likedText ? `家长喜欢的名字：${ctx.likedText}。请体会这些名字的气质（用字、声调、男女倾向、雅俗程度），起出风格相近的名字，但不要直接使用这些名字。` : ''}
+两个字合起来要成词或意境连贯，避免两个好字硬凑；可以参考“动词加自然意象”（如知夏、听澜、望舒）或化用诗词意境。连同姓氏读起来要顺口，不能有不好的谐音。
+只能使用下面列出的字（按康熙笔画分组，★ 表示合八字喜用${bz ? `「${bz.xi.join('、')}」` : ''}）：
+${Object.keys(byKx).sort((a, b) => a - b).map(k => `${k}画：${byKx[k].join(' ')}`).join('\n')}
+${state.strokeOnly && state.len === 2 ? `两个字的笔画必须是下列组合之一（第一个字画数-第二个字画数）：${state.combos.map(c => c.key).join('、')}` : ''}
+${bz && state.opt.wxRule !== 'off' ? `每个名字至少要有一个带 ★ 的字${state.opt.wxRule === 'strict' ? '，最好两个字都带 ★' : ''}。` : ''}
+不要重复这些已有的名字：${[...existing].slice(0, 80).join('、')}。
+只回复一个 JSON 数组，每个元素形如 {"name":"名字（不含姓）","meaning":"20到40字的寓意说明"}。`;
+    aiBusy = 20; aiBusyLabel = 'AI 正在按风格起名，通常需要 20–60 秒…'; aiMsg = ''; aiCtl = new AbortController(); renderNames();
+    try {
+      const out = await sampleFn.json(prompt, { signal: aiCtl.signal, modelTier: aiTier, cache: false });
+      const arr = Array.isArray(out) ? out : [];
+      const got = [], seen = new Set((state.aiGen || []).map(it => it.name));
+      let bad = 0;
+      arr.forEach(o => {
+        const name = String((o && o.name) || '').replace(ctx.surname.s, '').trim();
+        if (!name || seen.has(name) || existing.has(name)) return;
+        const a = analyze(ctx.surname.s + name, ctx);
+        if (!a || !passesFilters(a.given) || a.r.bikeng.warn.length) { bad++; return; }
+        seen.add(name);
+        got.push({ name, given: a.given, src: a.src, r: a.r, aiMeaning: String(o.meaning || '').slice(0, 80) });
+      });
+      state.aiGen = [...got, ...(state.aiGen || [])];
+      state.aiGen.forEach((it, i) => { it.rank = i; });
+      saveAiGen(state.aiGen);
+      aiMsg = got.length ? (bad ? `新增 ${got.length} 个，另有 ${bad} 个不符合笔画、五行或避坑条件，已剔除。` : '') : `这次没有符合条件的名字（${bad} 个被笔画、五行或避坑规则剔除），可以再试一次或放宽筛选条件。`;
+    } catch (e) {
+      aiMsg = aiError(e);
+    } finally {
+      aiBusy = false; aiCtl = null;
+      renderNames();
+    }
+  }
+  function aiSection(full) {
+    if (OFFLINE) return '';
+    const rv = aiReviews[aiKey(full)];
+    const k = aiKey(full);
+    return `<div class="sec"><h3>AI 解读<span class="s">由 Claude 生成，仅供参考</span></h3>
+      ${rv ? `<p class="ai"><span class="aitag v-${rv.verdict}">AI ${rv.verdict}</span>${esc(rv.meaning)}${rv.issues ? `<span class="issue">（${esc(rv.issues)}）</span>` : ''}</p>` : ''}
+      <div class="ai-deep" data-deep-out="${esc(k)}">${esc(deepCache[k] || '')}</div>
+      ${sampleFn && !aiDead ? `<div class="row" style="margin-top:10px"><button class="ghost" data-deep="${esc(full)}" type="button">${deepCache[k] ? '重新解读' : 'AI 深度解读'}</button><span class="hint" data-deep-msg="${esc(k)}"></span></div>`
+        : '<p class="hint">在 claude.ai 中打开本页面后，可让 Claude 写出完整的寓意解读。</p>'}
+    </div>`;
+  }
+  let deepCtl = null;
+  async function aiDeep(full, btn) {
+    const ctx = state ? state.ctx : buildCtx();
+    const a = analyze(full, ctx);
+    if (!a || !sampleFn) return;
+    const k = aiKey(full);
+    const box = btn.closest('.sec');
+    const out = box.querySelector('[data-deep-out]'), msg = box.querySelector('[data-deep-msg]');
+    if (deepCtl) { deepCtl.abort(); deepCtl = null; }
+    deepCtl = new AbortController();
+    btn.disabled = true; msg.textContent = 'Claude 正在思考，通常需要 10–40 秒…'; out.textContent = '';
+    const r = a.r, bz = ctx.bazi, g = r.wuge.ge;
+    const facts = [
+      `姓名：${full}（${ctx.female ? '女孩' : '男孩'}）`,
+      `各字：${a.given.map(c => `${c.c}（${c.py}，五行${c.wx || '未定'}，${c.mean || '无释义'}）`).join('；')}`,
+      bz ? `八字：${bz.pillars.map(p => p.gz).join(' ')}，日主${bz.dayGan}${bz.me}${bz.strong}，喜用${bz.xi.join('、')}，忌${bz.ji.join('、')}${bz.missing.length ? '，八字缺' + bz.missing.join('、') : ''}；属${bz.animal}` : '未提供出生时间',
+      `五格：人格${g.人格.n}${g.人格.level}，地格${g.地格.n}${g.地格.level}，总格${g.总格.n}${g.总格.level}，外格${g.外格.n}${g.外格.level}；三才${r.wuge.sancai.wx.join('')}${r.wuge.sancai.level}；综合${r.verdict}`,
+      shownSrc(a).length ? `出处${a.r.chuchu.kind === '各取' ? '（各取一字）' : ''}：${shownSrc(a).slice(0, 2).map(s => `${s.ch ? '「' + s.ch + '」取自' : ''}${s.book}${s.author ? '·' + s.author : ''}《${s.title}》「${s.text}」`).join('；')}` : '典籍中未找到出处',
+      `程序评分：${r.total} 分（${r.grade.label}）`,
+    ].join('\n');
+    const prompt = `你是一位熟悉古典文学的中文起名顾问。请为下面这个名字写一份解读，给孩子的父母看。程序已经算好的信息如下，可以引用，但不要重新推算八字和笔画，也不要夸大命理作用。
+
+${facts}
+
+请按下面四段写，每段以【】标题开头，总共不超过 350 字，用平实的中文，不用 Markdown：
+【寓意】两个字合在一起的意思和意境；
+【出处】如有出处，用白话解释原句和名字的关系；没有就说明是组合取义；
+【契合与不足】结合五行喜用、生肖，说说契合之处，再坦率指出一两个可能的不足（读音、联想、常见度等）；
+【一句话介绍】一句可以讲给长辈听的名字介绍，30 字以内。`;
+    try {
+      const res = await sampleFn(prompt, { signal: deepCtl.signal, modelTier: aiTier, onText: ({ text }) => { out.textContent = text; msg.textContent = ''; } });
+      deepCache[k] = res.text;
+      msg.textContent = res.truncated ? '解读被截断了，可以再试一次。' : '';
+      btn.textContent = '重新解读';
+    } catch (e) {
+      out.textContent = e && e.text ? e.text : '';
+      msg.textContent = aiError(e);
+      if (aiDead) btn.hidden = true;
+    } finally {
+      btn.disabled = false; deepCtl = null;
+    }
+  }
+
+  /* ---------- 家人投票（共享数据） ---------- */
+  const fam = { db: null, user: null, uid: null, canWrite: null, canEdit: false, list: [], votes: {}, ready: false, msg: '', pending: false, copied: '' };
+  const nameKey = full => 'n_' + [...full].map(c => c.codePointAt(0).toString(16)).join('_');
+  const famHas = full => fam.list.some(x => x.full === full);
+  const famCanAdd = () => !!(fam.db && fam.uid && fam.canWrite !== false);
+  function dbMsg(e) {
+    const c = e && e.code;
+    if (c === 'invalid_argument') { fam.canWrite = false; return '你目前只能查看，不能写入。请让页面主人在“分享”中把你设为编辑者。'; }
+    if (c === 'quota_exceeded') return '共享名单已满，请先删除一些名字。';
+    if (c === 'resource_exhausted') return '操作太频繁，请稍等再试。';
+    if (c === 'revoked') return '你对这个页面的访问权限已变更，请刷新页面。';
+    return '暂时无法连接共享名单，请稍后刷新再试。';
+  }
+  const SETTING_IDS = ['surname', 'bdate', 'btime', 'place', 'lng', 'sect'];
+  function currentSettings() {
+    const o = { sex: segValue('sex'), len: segValue('len'), nohour: $('#nohour').checked };
+    SETTING_IDS.forEach(id => { o[id] = $('#' + id).value; });
+    return o;
+  }
+  function setSeg(id, v) { document.querySelectorAll(`#${id} button`).forEach(b => b.setAttribute('aria-pressed', b.dataset.v === v ? 'true' : 'false')); }
+  function applySettings(o) {
+    setTimeout(settingsSummary, 0);
+    if (!o || typeof o !== 'object') return false;
+    let changed = false;
+    SETTING_IDS.forEach(id => { if (typeof o[id] === 'string' && $('#' + id).value !== o[id]) { $('#' + id).value = o[id]; changed = true; } });
+    if (o.sex && o.sex !== segValue('sex')) { setSeg('sex', o.sex); changed = true; }
+    if (o.len && o.len !== segValue('len')) { setSeg('len', o.len); changed = true; }
+    if (typeof o.nohour === 'boolean' && o.nohour !== $('#nohour').checked) { $('#nohour').checked = o.nohour; changed = true; }
+    $('#lngRow').hidden = $('#place').value !== 'custom';
+    return changed;
+  }
+  let famWrite = Promise.resolve();
+  const queue = fn => (famWrite = famWrite.then(fn, fn));
+  async function famInit() {
+    if (!(window.claude && typeof window.claude.use === 'function')) { fam.ready = true; famChanged(); return; }
+    const [db, user] = await Promise.all([window.claude.use('db'), window.claude.use('user')]);
+    fam.db = db; fam.user = user;
+    if (user) { fam.uid = await user.id(); fam.canWrite = await user.can('data.write'); fam.canEdit = await user.canEdit(); }
+    if (db) {
+      try {
+        const cfg = await db.doc('config/main').get();
+        if (cfg.exists && applySettings(cfg.data().settings)) { fam.copied = ''; run(true); }
+      } catch (e) { /* 读取失败时沿用页面上的设置 */ }
+      db.collection('shortlist').onSnapshot(sn => { fam.list = sn.docs.map(d => Object.assign({ id: d.id }, d.data())); famChanged(); }, e => { fam.msg = dbMsg(e); famChanged(); });
+      db.collection('votes').onSnapshot(sn => { fam.votes = Object.fromEntries(sn.docs.map(d => [d.id, d.data()])); famChanged(); }, e => { fam.msg = dbMsg(e); famChanged(); });
+    }
+    fam.ready = true; famChanged();
+    if (state && !$('#tab-gen').hidden && famCanAdd()) renderNames();
+  }
+  function famChanged() {
+    if ($('#voteCount')) $('#voteCount').textContent = fam.list.length ? `(${fam.list.length})` : '';
+    if ($('#tab-vote').hidden) return;
+    if (document.activeElement && document.activeElement.closest('#voteOut') && document.activeElement.matches('input')) { fam.pending = true; return; }
+    renderVote();
+  }
+  async function famAdd(full) {
+    if (!famCanAdd()) return;
+    await queue(async () => {
+      try {
+        await fam.db.doc('shortlist/' + nameKey(full)).set({ full, by: fam.uid, at: Date.now() });
+        await fam.db.doc('config/main').set({ settings: currentSettings(), by: fam.uid, at: Date.now() });
+      } catch (e) { fam.msg = dbMsg(e); famChanged(); }
+    });
+  }
+  async function famRemove(id) {
+    await queue(async () => { try { await fam.db.doc('shortlist/' + id).delete(); } catch (e) { fam.msg = dbMsg(e); famChanged(); } });
+  }
+  async function famVote(full, patch) {
+    if (!fam.db || !fam.uid) return;
+    const mine = Object.assign({}, (fam.votes[fam.uid] || {}).picks);
+    mine[full] = Object.assign({ score: 0, note: '' }, mine[full], patch, { at: Date.now() });
+    await queue(async () => { try { await fam.db.doc('votes/' + fam.uid).set({ picks: mine, at: Date.now() }); } catch (e) { fam.msg = dbMsg(e); famChanged(); } });
+  }
+  const starStr = n => '★'.repeat(n) + '☆'.repeat(5 - n);
+  function shareText(items, ctx) {
+    const bz = ctx.bazi;
+    const head = `【${ctx.surname.s}家宝宝起名候选】${ctx.female ? '女孩' : '男孩'}${bz ? `，${bz.solar.replace('北京时间 ', '')}出生，八字喜用${bz.xi.join('、')}` : ''}`;
+    const body = items.map((a, i) => {
+      const rv = aiReviews[aiKey(a.full)];
+      const lines = [`${i + 1}. ${a.full}（${a.r.total}分，${a.r.grade.label}）`];
+      shownSrc(a).slice(0, 2).forEach(s => lines.push(`   ${s.ch ? '「' + s.ch + '」' : ''}出自${s.book}：${s.text}`));
+      lines.push(`   ${rv && rv.meaning ? rv.meaning : a.given.map(c => `${c.c}：${c.mean}`).join('；')}`);
+      return lines.join('\n');
+    }).join('\n');
+    return `${head}\n\n${body}\n\n请回复你最喜欢的一到三个名字，说说理由。`;
+  }
+  async function renderVote() {
+    fam.pending = false;
+    const box = $('#voteOut');
+    const ctx = buildCtx();
+    if (!fam.ready) { box.innerHTML = '<div class="loading">正在连接共享名单…</div>'; return; }
+    if (ctx.error) { box.innerHTML = `<div class="empty">${ctx.error}</div>`; return; }
+    const fulls = fam.db ? fam.list.map(x => x.full) : favs;
+    const items = fulls.map(f => analyze(f, ctx)).filter(Boolean);
+    const byFull = Object.fromEntries(fam.list.map(x => [x.full, x]));
+    const voteOf = full => Object.entries(fam.votes).map(([uid, v]) => Object.assign({ uid }, (v.picks || {})[full])).filter(v => v.score || v.note);
+    items.forEach(a => { const vs = voteOf(a.full).filter(v => v.score); a.avg = vs.length ? vs.reduce((t, v) => t + v.score, 0) / vs.length : 0; a.n = vs.length; });
+    items.sort((x, y) => y.avg - x.avg || y.n - x.n || y.r.total - x.r.total);
+    const ids = [...new Set([...Object.keys(fam.votes), ...fam.list.map(x => x.by).filter(Boolean)])];
+    const ps = fam.user && ids.length ? await fam.user.profiles(ids) : {};
+    const who = id => id === fam.uid ? '我' : ((ps[id] && ps[id].name) || '家人');
+    items.forEach(a => { a.voters = voteOf(a.full).map(v => ({ who: who(v.uid), score: v.score || 0, note: v.note || '' })); });
+    const intro = fam.db
+      ? `<p>在“测算起名”的名字卡片、详情或“收藏对比”里点“加入投票”，名字就会进入这份共享名单。每位家人打 1 到 5 星并留言，名单按平均星数排序。</p>
+         <p class="hint" style="margin-top:6px">邀请家人：点页面右上角的“分享”，按邮箱邀请家人并设为“编辑者”（家人需要有 claude.ai 账号），对方打开同一个链接就能投票。页面不要同时开启“公开链接”分享，否则受邀家人只能查看。加入名单时会一并保存当前的出生信息，家人打开后看到的是同一份测算结果。</p>
+         ${fam.canWrite === false ? '<p class="lv-凶" style="margin-top:6px">你目前只能查看名单和投票，不能打分。请让页面主人把你设为编辑者。</p>' : ''}
+         ${!fam.uid ? '<p class="lv-凶" style="margin-top:6px">没有识别到你的账号，暂时不能打分。请登录 claude.ai 后刷新。</p>' : ''}`
+      : '<p>家人在线投票需要在 claude.ai 中打开本页面。下面先列出你收藏的名字，可以复制后发到微信群里请家人回复。</p>';
+    const card = a => {
+      const vs = voteOf(a.full);
+      const mine = (fam.votes[fam.uid] || { picks: {} }).picks || {};
+      const my = mine[a.full] || { score: 0, note: '' };
+      const rv = aiReviews[aiKey(a.full)];
+      const entry = byFull[a.full];
+      const canRemove = fam.db && entry && (fam.canEdit || entry.by === fam.uid);
+      const canVote = fam.db && fam.uid && fam.canWrite !== false;
+      return `<article class="vote">
+        <div>
+          <div class="nm">${rubyName(a.sur, a.given)}</div>${sayBtn(a.full)}
+          <div class="meta-line" style="margin-top:6px"><span class="tag">${a.r.grade.label}</span><span class="tag">综合 <span class="lv-${a.r.verdict}">${a.r.verdict}</span></span>${rv ? `<span class="aitag v-${rv.verdict}">AI ${rv.verdict}</span>` : ''}</div>
+          ${shownSrc(a).slice(0, 2).map(s => `<p class="src" style="margin-top:6px">${s.ch ? `<b>${esc(s.ch)}</b>　` : ''}${srcHL(s, a.given)}<cite>${esc(srcCite(s))}</cite></p>`).join('')}
+          ${rv && rv.meaning ? `<p class="ai" style="margin-top:4px">${esc(rv.meaning)}</p>` : ''}
+        </div>
+        <div class="side">
+          <span class="seal">${a.r.total}<small>${a.r.grade.g}等</small></span>
+          ${fam.db ? (a.n ? `<span class="avg">${a.avg.toFixed(1)}</span><span class="stars small">${starStr(Math.round(a.avg))}</span><span class="hint">${a.n} 人打分</span>` : '<span class="hint">还没有人打分</span>') : ''}
+        </div>
+        ${fam.db ? `<div class="full">
+          ${canVote ? `<div class="mine"><span class="hint">我的评分</span><span class="stars" role="group" aria-label="我的评分">${[1, 2, 3, 4, 5].map(n => `<button type="button" data-star="${esc(a.full)}" data-v="${n}" class="${n <= my.score ? 'on' : ''}" aria-label="${n} 星">★</button>`).join('')}</span>
+            <input type="text" data-note="${esc(a.full)}" value="${esc(my.note || '')}" placeholder="写一句理由，按回车保存" maxlength="100"></div>` : ''}
+          ${vs.filter(v => v.uid !== fam.uid).length ? `<div class="voters" style="margin-top:8px">${vs.filter(v => v.uid !== fam.uid).map(v => `<div><span class="who">${esc(who(v.uid))}</span>${v.score ? `<span class="stars small">${starStr(v.score)}</span> ` : ''}${esc(v.note || '')}</div>`).join('')}</div>` : ''}
+          <div class="row" style="margin-top:8px"><button class="icon-btn" data-open="${esc(a.full)}" type="button">查看详细分析</button>${canRemove ? `<button class="icon-btn" data-remove="${esc(entry.id)}" type="button">移出名单</button>` : ''}${entry && entry.by ? `<span class="hint">由${esc(who(entry.by))}加入</span>` : ''}</div>
+        </div>` : `<div class="full"><button class="icon-btn" data-open="${esc(a.full)}" type="button">查看详细分析</button></div>`}
+      </article>`;
+    };
+    box.innerHTML = `<div class="panel">
+        <h3 style="font-family:var(--serif);font-size:18px;margin:0 0 8px">家人投票</h3>${intro}
+        <div class="row" style="margin-top:10px">
+          ${items.length ? '<button class="ghost" data-copy="1" type="button">复制名单，发到微信群</button>' : ''}
+          ${fam.msg ? `<span class="lv-凶">${esc(fam.msg)}</span>` : ''}
+        </div>
+        ${items.length ? exportBar('vote') : ''}
+        ${fam.copied ? `<textarea class="copybox" readonly aria-label="候选名单文字">${esc(fam.copied)}</textarea><p class="hint">没能自动复制，请长按或全选上面的文字手动复制。</p>` : ''}
+      </div>
+      ${items.length ? `<div class="vote-list">${items.map(card).join('')}</div>` : `<div class="empty" style="margin-top:14px">${fam.db ? '共享名单还是空的。在“测算起名”里给喜欢的名字点“加入投票”。' : '还没有收藏。先在“测算起名”里收藏几个名字。'}</div>`}`;
+    box._items = items; box._ctx = ctx;
+  }
+  $('#voteOut').addEventListener('click', e => {
+    const st = e.target.closest('[data-star]');
+    if (st) { famVote(st.dataset.star, { score: +st.dataset.v }); st.parentElement.querySelectorAll('button').forEach(b => b.classList.toggle('on', +b.dataset.v <= +st.dataset.v)); return; }
+    const o = e.target.closest('[data-open]'); if (o) { openDetail(o.dataset.open); return; }
+    const rm = e.target.closest('[data-remove]'); if (rm) { famRemove(rm.dataset.remove); return; }
+    const cp = e.target.closest('[data-copy]');
+    if (cp) {
+      const text = shareText($('#voteOut')._items || [], $('#voteOut')._ctx);
+      const done = () => { cp.textContent = '已复制，可以粘贴到微信'; };
+      const fail = () => { fam.copied = text; renderVote(); const t = $('.copybox'); if (t) { t.focus(); t.select(); } };
+      try { navigator.clipboard.writeText(text).then(done, fail); } catch (err) { fail(); }
+    }
+  });
+  $('#voteOut').addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.dataset.note !== undefined) e.target.blur(); });
+  $('#voteOut').addEventListener('change', e => {
+    const n = e.target.closest('[data-note]');
+    if (n) famVote(n.dataset.note, { note: n.value.trim().slice(0, 100) });
+  });
+  $('#voteOut').addEventListener('focusout', () => { setTimeout(() => { if (fam.pending && !(document.activeElement && document.activeElement.closest('#voteOut input'))) renderVote(); }, 50); });
+
+
+  /* ---------- 导出报告 ---------- */
+  const RP_CSS = `
+.rp { width: 750px; box-sizing: border-box; padding: 44px 46px 36px; background: #fbfaf6; color: #1d2a2e;
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans SC", sans-serif; font-size: 15px; line-height: 1.7; }
+.rp * { box-sizing: border-box; }
+.rp .sf { font-family: "Noto Serif SC", "Songti SC", "STSong", "SimSun", serif; }
+.rp h1 { margin: 0; font-size: 34px; letter-spacing: 4px; font-weight: 700; }
+.rp .sub { color: #55666a; margin-top: 6px; font-size: 14px; }
+.rp .rule { height: 3px; background: #b03a2c; width: 64px; margin: 16px 0 22px; }
+.rp h2 { font-size: 19px; margin: 26px 0 10px; font-weight: 700; color: #3f7466; }
+.rp .pan { display: flex; gap: 10px; }
+.rp .pz { flex: 1; text-align: center; border: 1px solid #cbd6d0; border-radius: 10px; padding: 8px 4px 6px; background: #fff; }
+.rp .pz .lab { font-size: 12px; color: #55666a; }
+.rp .pz .gz { font-size: 30px; line-height: 1.25; font-weight: 700; }
+.rp .pz.day { border-color: #b03a2c; }
+.rp .facts { margin: 12px 0 0; padding: 0; list-style: none; }
+.rp .facts li { padding: 3px 0; }
+.rp .facts b { display: inline-block; min-width: 76px; color: #55666a; font-weight: 500; }
+.rp .w-木 { color: #3f8a52; } .rp .w-火 { color: #c4533a; } .rp .w-土 { color: #a07a32; } .rp .w-金 { color: #7f7a6a; } .rp .w-水 { color: #2f6a9c; }
+.rp .card { border: 1px solid #cbd6d0; border-radius: 12px; background: #fff; padding: 18px 20px 16px; margin-top: 14px; }
+.rp .top { display: flex; align-items: flex-start; gap: 14px; }
+.rp .rk { font-size: 13px; color: #fff; background: #3f7466; border-radius: 20px; padding: 1px 10px; margin-top: 18px; white-space: nowrap; }
+.rp .nm { display: flex; gap: 6px; flex: 1; }
+.rp .ch { display: flex; flex-direction: column; align-items: center; min-width: 46px; }
+.rp .ch i { font-style: normal; font-size: 13px; color: #55666a; line-height: 1.2; }
+.rp .ch span { font-size: 40px; line-height: 1.2; font-weight: 700; }
+.rp .score { text-align: center; border: 2px solid #b03a2c; color: #b03a2c; border-radius: 8px; padding: 2px 10px; min-width: 70px; }
+.rp .score b { display: block; font-size: 26px; line-height: 1.2; }
+.rp .score small { font-size: 12px; }
+.rp .vt { text-align: center; margin-top: 6px; color: #b5651d; font-size: 13px; }
+.rp .row2 { margin-top: 10px; display: grid; grid-template-columns: 72px 1fr; gap: 4px 10px; font-size: 14px; }
+.rp .row2 > b { color: #55666a; font-weight: 500; }
+.rp .q { background: #f3f1e8; border-left: 3px solid #3f7466; padding: 4px 10px; border-radius: 4px; }
+.rp .q mark { background: #f3dfae; color: inherit; padding: 0 1px; }
+.rp .q small { display: block; color: #55666a; font-size: 12px; }
+.rp .good { color: #2f7a4a; } .rp .warn { color: #b5651d; } .rp .bad { color: #b03a2c; }
+.rp .cm { margin-top: 10px; font-size: 13.5px; color: #33454a; }
+.rp .votes { margin-top: 8px; font-size: 13.5px; }
+.rp .votes div { padding: 2px 0; }
+.rp .stars { color: #b5651d; letter-spacing: 1px; }
+.rp .foot { margin-top: 26px; padding-top: 12px; border-top: 1px solid #cbd6d0; color: #55666a; font-size: 12.5px; }
+`;
+  const lvc = l => ({ 大吉: 'good', 吉: 'good', 半吉: 'warn', 中平: 'warn', 凶: 'bad', 欠佳: 'bad' }[l] || '');
+  function reportBody(items, ctx, from) {
+    const bz = ctx.bazi;
+    const sx = ctx.female ? '女孩' : '男孩';
+    const t = bz && bz.ts;
+    const birth = bz ? `${esc(bz.solar.replace('北京时间 ', ''))}出生${t && t.applied ? `（${esc(t.place)}，真太阳时 ${String(t.h).padStart(2, '0')}:${String(t.mi).padStart(2, '0')}）` : ''}` : '未填写出生时间';
+    const nameHTML = (sur, given) => [...sur, ...given].map(c => `<div class="ch"><i>${esc(c.py)}</i><span class="sf">${esc(c.c)}</span></div>`).join('');
+    const baziHTML = bz ? `<h2 class="sf">八字与喜用</h2>
+      <div class="pan">${bz.pillars.map(p => `<div class="pz ${p.name === '日' ? 'day' : ''}"><div class="lab">${p.name}柱 · ${esc(p.ss)}</div><div class="gz sf"><span class="w-${p.wx[0]}">${p.gan}</span><br><span class="w-${p.wx[1]}">${p.zhi}</span></div><div class="lab">${esc(p.nayin)}</div></div>`).join('')}</div>
+      <ul class="facts">
+        <li><b>农历</b>${esc(bz.lunar)} · 属${esc(bz.shengxiao)}</li>
+        <li><b>五行力量</b>${E.WX.map(w => `<span class="w-${w}">${w}</span> ${bz.power[w].toFixed(1)}`).join('　')}${bz.missing.length ? `　（缺${bz.missing.join('、')}）` : ''}</li>
+        <li><b>日主</b>${bz.dayGan}${bz.me}，${esc(bz.strong)}（生扶占 ${Math.round(bz.ratio * 100)}%），${esc(bz.geju)}</li>
+        <li><b>喜用神</b>${bz.xi.map(w => `<span class="w-${w}">${w}</span>`).join('、')}${bz.th && bz.th.use ? `，调候用<span class="w-${bz.th.wx}">${bz.th.wx}</span>` : ''}　<b style="min-width:0;margin-left:14px">忌</b> ${bz.ji.map(w => `<span class="w-${w}">${w}</span>`).join('、')}</li>
+      </ul>` : '';
+    const cardHTML = (a, i) => {
+      const g = a.r.wuge.ge, sc = a.r.wuge.sancai, d = a.r.bikeng.dup;
+      const ss = shownSrc(a).slice(0, 2);
+      const voters = (a.voters || []).filter(v => v.score || v.note);
+      return `<div class="card">
+        <div class="top"><span class="rk">第 ${i + 1} 名</span><div class="nm">${nameHTML(a.sur, a.given)}</div>
+          <div><div class="score"><b>${a.r.total}</b><small>${esc(a.r.grade.label)}</small></div>
+          ${a.n ? `<div class="vt"><span class="stars">${starStr(Math.round(a.avg))}</span><br>家人 ${a.avg.toFixed(1)} 分 · ${a.n} 人</div>` : ''}</div></div>
+        <div class="row2">
+          <b>字义</b><div>${a.given.map(c => `${esc(c.c)}（<span class="w-${c.wx}">${c.wx}</span>，${c.kx} 画）：${esc(c.mean || '')}`).join('<br>')}</div>
+          ${ss.map(s => `<b>${s.ch ? '「' + esc(s.ch) + '」出处' : '出处'}</b><div class="q">${srcHL(s, a.given)}<small>${esc(s.book)} · ${esc(srcCite(s))}</small></div>`).join('')}
+          <b>五格</b><div>人格 ${g.人格.n}<span class="${lvc(g.人格.level)}">${g.人格.level}</span>　地格 ${g.地格.n}<span class="${lvc(g.地格.level)}">${g.地格.level}</span>　外格 ${g.外格.n}<span class="${lvc(g.外格.level)}">${g.外格.level}</span>　总格 ${g.总格.n}<span class="${lvc(g.总格.level)}">${g.总格.level}</span></div>
+          <b>三才</b><div>${sc.wx.join('')} <span class="${lvc(sc.level)}">${sc.level}</span>　综合吉凶 <span class="${lvc(a.r.verdict)}">${a.r.verdict}</span></div>
+          <b>读音</b><div>${esc(a.r.yinlv.pattern)}${d && d.level ? `　重名 <span class="${lvc(DUP_CLS[d.level])}">${d.level}</span>${d.count ? `（样本中 ${d.count} 人）` : ''}` : ''}</div>
+        </div>
+        <div class="cm">${esc(a.r.comment)}</div>
+        ${voters.length ? `<div class="votes">${voters.map(v => `<div><b>${esc(v.who)}</b>　${v.score ? `<span class="stars">${starStr(v.score)}</span>　` : ''}${esc(v.note)}</div>`).join('')}</div>` : ''}
+      </div>`;
+    };
+    const today = new Date(); const ds = `${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日`;
+    return `<div class="rp">
+      <h1 class="sf">${esc(ctx.surname.s)}家宝宝起名报告</h1>
+      <div class="sub">${sx} · ${birth}</div>
+      <div class="rule"></div>
+      ${baziHTML}
+      <h2 class="sf">候选名字（${items.length} 个${from === 'vote' && items.some(a => a.n) ? '，按家人评分排序' : ''}）</h2>
+      ${items.map(cardHTML).join('')}
+      <div class="foot">${ds}生成 · 诗词八字起名。八字五行、五格数理、生肖喜忌均为传统民俗说法，仅供参考；典籍出处来自公有领域文本。重名参考基于公开的 120 万人名语料。</div>
+    </div>`;
+  }
+  function reportDoc(items, ctx, from) {
+    return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>${esc(ctx.surname.s)}家宝宝起名报告</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@500;700&display=swap">
+<style>body{margin:0;background:#e9ece9}.rp{margin:0 auto}@media print{body{background:#fff}.rp{width:auto;padding:0}.rp .card{break-inside:avoid}}${RP_CSS}</style></head>
+<body>${reportBody(items, ctx, from)}</body></html>`;
+  }
+  let h2cPromise = null;
+  function loadH2C() {
+    if (window.html2canvas) return Promise.resolve(window.html2canvas);
+    if (!h2cPromise) h2cPromise = new Promise((ok, bad) => {
+      const sc = document.createElement('script');
+      sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+      sc.onload = () => ok(window.html2canvas); sc.onerror = () => { h2cPromise = null; bad(new Error('load')); };
+      document.head.appendChild(sc);
+    });
+    return h2cPromise;
+  }
+  let dlNS; const dlReady = (window.claude && typeof window.claude.use === 'function') ? window.claude.use('downloads').then(d => { dlNS = d; return d; }).catch(() => null) : Promise.resolve(null);
+  const exportBar = from => `<div class="row exportbar" style="margin-top:10px"><span class="hint">导出报告</span>
+    <button class="ghost" data-export="png" data-from="${from}" type="button">长图（适合发微信）</button>
+    <button class="ghost" data-export="html" data-from="${from}" type="button">网页文件（可打印成 PDF）</button>
+    <span class="hint" data-export-msg></span></div>
+    <div class="row exportbar" style="margin-top:8px"><span class="hint">分享给家人</span>
+    <button class="ghost" data-sharelink="${from}" type="button">复制分享链接</button>
+    <label class="check"><input type="checkbox" data-share-birth checked> 带上出生时间</label>
+    <span class="hint" data-share-msg>家人用手机打开链接，就能看到同一份名单和完整分析，不需要账号。</span></div>`;
+
+  /* ---------- 分享链接：名单和条件编码在手机版网址的 # 后面，不经过任何服务器 ---------- */
+  const APP_URL = 'https://zhm5985119.github.io/Name-create/';
+  const b64e = str => btoa(unescape(encodeURIComponent(str))).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+  const b64d = str => decodeURIComponent(escape(atob(str.replace(/-/g, '+').replace(/_/g, '/'))));
+  function shareLink(fulls, withBirth) {
+    const c = currentSettings();
+    const o = { v: 1, s: c.surname, x: c.sex, l: c.len, st: segValue('style'), sm: $('#strokeMode').value, n: fulls };
+    if (withBirth) Object.assign(o, { d: c.bdate, t: c.btime, h: c.nohour, p: c.place, g: c.lng, c: c.sect });
+    return APP_URL + '#share=' + b64e(JSON.stringify(o));
+  }
+  let SHARED = null, sharedNames = null;
+  try { const m = location.hash.match(/share=([\w-]+)/); if (m) SHARED = JSON.parse(b64d(m[1])); } catch (e) { SHARED = null; }
+  function applyShared() {
+    if (!SHARED || !Array.isArray(SHARED.n)) return;
+    const o = SHARED;
+    applySettings({ surname: o.s, sex: o.x, len: o.l, bdate: o.d, btime: o.t, nohour: o.h, place: o.p, lng: o.g, sect: o.c });
+    if (o.st) setSeg('style', o.st);
+    if (o.sm && $('#strokeMode')) $('#strokeMode').value = o.sm;
+    sharedNames = o.n.filter(x => typeof x === 'string' && x.length >= 2 && x.length <= 4).slice(0, 30);
+  }
+  async function doShareLink(from, btn) {
+    const box = from === 'vote' ? $('#voteOut') : $('#favOut');
+    const items = box._items || [];
+    const msg = btn.parentElement.querySelector('[data-share-msg]');
+    if (!items.length) { msg.textContent = '还没有可分享的名字。'; return; }
+    const url = shareLink(items.map(a => a.full), btn.parentElement.querySelector('[data-share-birth]').checked);
+    const text = `${items[0].full.slice(0, 1)}家宝宝起名候选（${items.length} 个）：${items.map(a => a.full).join('、')}。点开链接看完整分析：`;
+    try {
+      if (navigator.share && /iPhone|iPad|Android/i.test(navigator.userAgent)) { await navigator.share({ title: '起名候选', text, url }); msg.textContent = '已打开分享面板。'; return; }
+    } catch (e) { if (e && e.name === 'AbortError') return; }
+    try { await navigator.clipboard.writeText(text + url); msg.textContent = '链接已复制，可以粘贴到微信发给家人。'; }
+    catch (e) { msg.innerHTML = `没能自动复制，请手动复制：<textarea class="copybox" readonly style="width:100%;margin-top:6px">${esc(text + url)}</textarea>`; const t = msg.querySelector('textarea'); if (t) { t.focus(); t.select(); } }
+  }
+  document.addEventListener('click', e => { const b = e.target.closest('[data-sharelink]'); if (b) doShareLink(b.dataset.sharelink, b); });
+  async function saveFile(filename, data, msg) {
+    const dl = await dlReady;
+    if (!dl && OFFLINE) {
+      try {
+        const file = new File([data], filename, { type: data instanceof Blob ? 'image/png' : 'text/html' });
+        if (navigator.canShare && navigator.share && navigator.canShare({ files: [file] })) {
+          await navigator.share({ files: [file], title: filename });
+          msg.textContent = '已打开分享面板，可选择“存储图像”或“存储到文件”。';
+          return true;
+        }
+      } catch (e) { if (e && e.name === 'AbortError') { msg.textContent = '已取消。'; return true; } }
+      try {
+        const blob = data instanceof Blob ? data : new Blob([data], { type: 'text/html;charset=utf-8' });
+        const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename;
+        document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 60000);
+        msg.textContent = '已开始下载。';
+      } catch (e) { return false; }
+      return !(data instanceof Blob);   // 图片仍在页面上显示一份，方便手机长按保存
+    }
+    if (!dl) return false;
+    try { await dl.save({ filename, data }); msg.textContent = '已保存。'; return true; }
+    catch (e) { msg.textContent = e && e.code === 'declined' ? '已取消保存。' : e && e.code === 'rate_limited' ? '已有一个保存提示未处理，请稍后再试。' : '这里无法保存文件。'; return e && e.code === 'declined' ? true : false; }
+  }
+  function showPreview(html, note) {
+    $('#sheetBody').innerHTML = `<div class="detail"><p class="hint" style="margin-bottom:10px">${note}</p>${html}</div>`;
+    $('#sheet').hidden = false; $('#sheetBg').hidden = false; $('#sheet').scrollTop = 0;
+  }
+  async function doExport(kind, from, btn) {
+    const msg = btn.parentElement.querySelector('[data-export-msg]');
+    const box = from === 'vote' ? $('#voteOut') : $('#favOut');
+    const items = box._items || [], ctx = box._ctx;
+    if (!items.length || !ctx) { msg.textContent = '还没有可导出的名字。'; return; }
+    const fname = `${ctx.surname.s}家宝宝起名报告`;
+    btn.disabled = true;
+    try {
+      if (kind === 'html') {
+        const doc = reportDoc(items, ctx, from);
+        msg.textContent = '';
+        if (!(await saveFile(fname + '.html', doc, msg))) {
+          showPreview(`<style>${RP_CSS}</style><div style="overflow:auto">${reportBody(items, ctx, from)}</div>`, '这里不能直接保存文件。下面是报告内容，可以截图，或用浏览器的“打印”另存为 PDF。');
+        }
+        return;
+      }
+      msg.textContent = '正在生成图片…';
+      const h2c = await loadH2C();
+      const stage = document.createElement('div');
+      stage.style.cssText = 'position:fixed;left:-12000px;top:0;z-index:-1';
+      stage.innerHTML = `<style>${RP_CSS}</style>${reportBody(items, ctx, from)}`;
+      document.body.appendChild(stage);
+      try { if (document.fonts && document.fonts.ready) await document.fonts.ready; } catch (e) {}
+      const el = stage.querySelector('.rp');
+      const area = el.offsetWidth * el.offsetHeight;
+      const scale = Math.max(1, Math.min(2, Math.sqrt(15e6 / area)));
+      const canvas = await h2c(el, { scale, backgroundColor: '#fbfaf6', logging: false, useCORS: true });
+      stage.remove();
+      const blob = await new Promise(ok => canvas.toBlob(ok, 'image/png'));
+      msg.textContent = '';
+      if (!blob || !(await saveFile(fname + '.png', blob, msg))) {
+        const url = canvas.toDataURL('image/png');
+        showPreview(`<img src="${url}" alt="起名报告长图" style="width:100%;max-width:750px;border-radius:8px;border:1px solid var(--line)">`, OFFLINE ? '已尝试下载图片。如果没有下载成功，长按（手机）或右键（电脑）图片即可保存。' : '这里不能直接保存文件。长按（手机）或右键（电脑）图片即可保存。');
+      }
+    } catch (e) {
+      msg.textContent = '生成失败，请稍后再试，或改用“网页文件”。';
+    } finally { btn.disabled = false; }
+  }
+  document.addEventListener('click', e => { const b = e.target.closest('[data-export]'); if (b) doExport(b.dataset.export, b.dataset.from, b); });
+
+  /* ---------- 收藏 ---------- */
+  function toggleFav(full) {
+    favs = favs.includes(full) ? favs.filter(x => x !== full) : favs.concat(full);
+    store.set('favs', favs); updateFavCount();
+  }
+  function updateFavCount() { $('#favCount').textContent = favs.length ? `(${favs.length})` : ''; }
+  function renderFavs() {
+    const box = $('#favOut');
+    const ctx = buildCtx(true);
+    const list = sharedNames || favs;
+    if (ctx.error || !list.length) { box.innerHTML = '<div class="empty">还没有收藏。在候选名字上点“收藏”，就能在这里并排比较。</div>'; return; }
+    const items = list.map(f => analyze(f, ctx)).filter(Boolean);
+    const sharedBar = sharedNames ? `<div class="panel" style="border-color:var(--seal);margin-bottom:12px"><b>家人分享的 ${items.length} 个候选名字</b>
+      <p class="hint" style="margin-top:4px">姓氏、性别${SHARED && SHARED.d ? '和出生时间' : ''}已按链接填好，下面是同一份分析。可以点“详情”看五格、出处和点评，也可以导出长图。</p>
+      <div class="row" style="margin-top:8px"><button class="ghost" data-shared-keep="1" type="button">全部加入我的收藏</button><button class="ghost" data-shared-close="1" type="button">看我自己的收藏</button></div></div>` : '';
+    const rows = [
+      ['等级', a => `<span class="seal" style="display:inline-block">${a.r.total}</span> ${a.r.grade.label}`],
+      ['综合吉凶', a => `<span class="lv-${a.r.verdict}">${a.r.verdict}</span>`],
+      ...Object.keys(LABEL).map(k => [LABEL[k], a => Math.round(a.r[k].score * 100)]),
+      ['五行', a => a.given.map(c => `${c.c}${wxs(c.wx)}`).join(' ')],
+      ['人格 / 地格 / 总格', a => ['人格', '地格', '总格'].map(k => `<span class="lv-${a.r.wuge.ge[k].level}">${a.r.wuge.ge[k].n}${a.r.wuge.ge[k].level}</span>`).join(' / ')],
+      ['三才', a => `${a.r.wuge.sancai.wx.join('')} <span class="lv-${a.r.wuge.sancai.level}">${a.r.wuge.sancai.level}</span>`],
+      ['重名', a => { const d = a.r.bikeng.dup; return d && d.level ? `<span class="lv-${DUP_CLS[d.level]}">${d.level}</span>${d.count ? `<span class="hint">（${d.count} 人）</span>` : ''}` : '—'; }],
+      ['出处', a => shownSrc(a).length ? shownSrc(a).slice(0, 2).map(s => `<span class="quote" style="font-size:13px">${s.ch ? esc(s.ch) + '：' : ''}${srcHL(s, a.given)}</span>`).join('<br>') : '—'],
+      ['提醒', a => [...a.r.bikeng.warn, ...a.r.bikeng.info].map(esc).join('<br>') || '无'],
+    ];
+    box.innerHTML = `${sharedBar}<div class="panel"><div class="tbl-wrap"><table class="cmp">
+      <tr><th></th>${items.map(a => `<th><div class="nm" style="font-size:22px">${rubyName(a.sur, a.given)}</div>
+        ${sayBtn(a.full)}<button class="icon-btn" data-open="${esc(a.full)}" type="button">详情</button>${sharedNames ? '' : `<button class="icon-btn" data-unfav="${esc(a.full)}" type="button">移除</button>`}</th>`).join('')}</tr>
+      ${rows.map(([lab, fn]) => `<tr><td>${lab}</td>${items.map(a => `<td>${fn(a)}</td>`).join('')}</tr>`).join('')}
+      </table></div><p class="hint" style="margin-top:10px">按左侧当前的出生时间和性别重新计算。收藏保存在这台设备的浏览器里，换设备或清除浏览器数据后不会保留。</p>
+      ${famCanAdd() ? `<div class="row" style="margin-top:10px"><button class="ghost" data-allvote="1" type="button">把收藏全部加入家人投票</button></div>` : ''}
+      ${exportBar('fav')}</div>`;
+    box._items = items; box._ctx = ctx;
+  }
+
+  /* ---------- 事件 ---------- */
+  $('#report').addEventListener('click', e => {
+    const aiBtn = e.target.closest('[data-ai]');
+    if (aiBtn) { if (aiBtn.dataset.ai === 'gen') aiGenerate(); else if (aiCtl) aiCtl.abort(); return; }
+    const more = e.target.closest('[data-more]');
+    if (more) { state.shown[more.dataset.more] += 12; renderNames(); return; }
+    if (e.target.closest('[data-clear]')) { state.comboFilter = null; renderNames(); return; }
+    const th = e.target.closest("[data-th]"); if (th) { theme = th.dataset.th; renderNames(); return; }
+    const ot = e.target.closest('[data-other]'); if (ot) { showOther = ot.dataset.other === '1'; renderNames(); return; }
+    const tr = e.target.closest('tr[data-combo]');
+    if (tr) {
+      state.comboFilter = state.comboFilter === tr.dataset.combo ? null : tr.dataset.combo;
+      state.shown = { classic: 12, other: 12, aiGen: 12, picks: 12, each: 12 };
+      renderNames();
+      $('#stepNames').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      return;
+    }
+    const cardEl = e.target.closest('.card'); if (!cardEl) return;
+    const full = state.ctx.surname.s + cardEl.dataset.name;
+    const act = e.target.closest('[data-act]');
+    if (act && act.dataset.act === 'fav') {
+      toggleFav(full); const on = favs.includes(full);
+      act.setAttribute('aria-pressed', on); act.textContent = on ? '已收藏' : '收藏'; return;
+    }
+    if (act && act.dataset.act === 'vote') { if (!famHas(full)) famAdd(full).then(() => { act.textContent = '已在投票'; act.setAttribute('aria-pressed', 'true'); }); return; }
+    if (act && act.dataset.act === 'hide') { hidden.add(full); store.set('hiddenNames', [...hidden]); cardEl.remove(); return; }
+    openDetail(full);
+  });
+  $('#report').addEventListener('keydown', e => {
+    if (e.key !== 'Enter') return;
+    if (e.target.classList.contains('card')) openDetail(state.ctx.surname.s + e.target.dataset.name);
+    if (e.target.dataset.combo) e.target.click();
+  });
+  const favButtonHandler = e => {
+    const b = e.target.closest('[data-fav]'); if (!b) return;
+    toggleFav(b.dataset.fav); b.textContent = favs.includes(b.dataset.fav) ? '取消收藏' : '收藏这个名字';
+    if (state && !$('#tab-gen').hidden) renderNames();
+  };
+  $('#sheetBody').addEventListener('click', favButtonHandler);
+  const addVoteHandler = e => { const b = e.target.closest('[data-addvote]'); if (b && !famHas(b.dataset.addvote)) famAdd(b.dataset.addvote).then(() => { b.textContent = '已在家人投票中'; }); };
+  $('#sheetBody').addEventListener('click', addVoteHandler);
+  $('#checkOut').addEventListener('click', addVoteHandler);
+  const deepHandler = e => { const b = e.target.closest('[data-deep]'); if (b) aiDeep(b.dataset.deep, b); };
+  $('#sheetBody').addEventListener('click', deepHandler);
+  $('#checkOut').addEventListener('click', deepHandler);
+  $('#report').addEventListener('change', e => {
+    if (e.target.id === 'aiTier') { aiTier = e.target.value; store.set('aiTier', aiTier); }
+  });
+  $('#checkOut').addEventListener('click', favButtonHandler);
+  $('#favOut').addEventListener('click', e => {
+    const o = e.target.closest('[data-open]'); if (o) { openDetail(o.dataset.open); return; }
+    const u = e.target.closest('[data-unfav]'); if (u) { toggleFav(u.dataset.unfav); renderFavs(); return; }
+    if (e.target.closest('[data-shared-keep]')) { sharedNames.forEach(f => { if (!favs.includes(f)) favs.push(f); }); store.set('favs', favs); updateFavCount(); sharedNames = null; try { history.replaceState(null, '', location.pathname + location.search); } catch (err) {} renderFavs(); return; }
+    if (e.target.closest('[data-shared-close]')) { sharedNames = null; try { history.replaceState(null, '', location.pathname + location.search); } catch (err) {} renderFavs(); return; }
+    const av = e.target.closest('[data-allvote]');
+    if (av) { av.disabled = true; (async () => { for (const f of favs) if (!famHas(f)) await famAdd(f); av.textContent = '已全部加入，去“家人投票”查看'; })(); }
+  });
+  $('#go').onclick = () => { selectTab('gen'); run(); if (narrow.matches) { setCollapsed(true); document.querySelector('main').scrollIntoView({ behavior: 'smooth', block: 'start' }); } };
+  function runCheck() {
+    const ctx = buildCtx(true);
+    const full = $('#checkName').value.trim();
+    const a = !ctx.error && full.length >= 2 ? analyze(full, ctx) : null;
+    $('#checkOut').innerHTML = a ? `<div class="panel">${detailHTML(a.sur, a.given, a.src, a.r, ctx)}</div>`
+      : (() => {
+        const bad = full && DATA ? [...full].filter(ch => !DATA.byChar[ch] && !LOOKUP[ch] && !SURNAMES[ch]) : [];
+        return bad.length ? `<div class="empty">「${esc(bad.join('、'))}」不在《通用规范汉字表》里，上户口可能无法登记，本工具也无法计算。建议换用表内的字。</div>`
+          : '<div class="empty">请输入完整的姓名（姓加一到两个字）。</div>';
+      })();
+  }
+  $('#checkBtn').onclick = runCheck;
+  $('#checkName').addEventListener('keydown', e => { if (e.key === 'Enter') runCheck(); });
+  function selectTab(t) {
+    document.querySelectorAll('nav.tabs button').forEach(b => b.setAttribute('aria-selected', b.dataset.tab === t ? 'true' : 'false'));
+    ['gen', 'pick', 'check', 'fav', 'vote', 'about'].forEach(x => { $('#tab-' + x).hidden = x !== t; });
+    if (t === 'pick') renderPick();
+    if (t === 'gen' && tasteDirty && state) { tasteDirty = false; run(true); }
+    if (t === 'fav') renderFavs();
+    if (t === 'vote') renderVote();
+    if (t === 'check') runCheck();
+  }
+  document.querySelector('nav.tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) selectTab(b.dataset.tab); });
+
+  /* ---------- 载入数据 ---------- */
+  const getJSON = f => { const el = document.getElementById('data-' + f.replace('.json', '')); return el ? Promise.resolve(JSON.parse(el.textContent)) : fetch(f).then(r => { if (!r.ok) throw new Error(f); return r.json(); }); };
+  Promise.all(['chars.json', 'poems.json', 'lookup.json', 'names.json'].map(getJSON))
+    .then(([d, p, l, nm]) => {
+      DATA = d; POEMS = p; LOOKUP = l; E.setNames(nm); E.setPoems(p, d);
+      loadMine();
+      DATA.byChar = Object.fromEntries(DATA.chars.map(c => [c.c, c]));
+      DATA.surnames.forEach(s => { SURNAMES[s.s] = s; });
+      $('#surnameList').innerHTML = DATA.surnames.map(s => `<option value="${s.s}">`).join('');
+      updateFavCount();
+      if (window.NAMER_STANDALONE && !location.hash.includes('share=')) applySettings(store.get('form', null));
+      applyShared();
+      run();
+      if (sharedNames) selectTab('fav');
+      famInit();
+    })
+    .catch(err => { $('#report').innerHTML = `<div class="empty">数据文件没有载入（${esc(err.message)}），请刷新页面重试。</div>`; });
+})();
+</script>
+
+<script>
+// 离线缓存与自动更新：每次打开（或从后台切回来）都检查新版本；新版本下载好后自动刷新一次
+if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+  const hadController = !!navigator.serviceWorker.controller;
+  let reloaded = false;
+  navigator.serviceWorker.addEventListener('controllerchange', () => {
+    if (!hadController || reloaded) return;
+    reloaded = true;
+    try { sessionStorage.setItem('namerUpdated', '1'); } catch (e) {}
+    location.reload();
+  });
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' }).then(reg => {
+      const check = () => reg.update().catch(() => {});
+      document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') check(); });
+      setInterval(check, 30 * 60 * 1000);
+    }).catch(() => {});
+    try {
+      if (sessionStorage.getItem('namerUpdated')) {
+        sessionStorage.removeItem('namerUpdated');
+        const n = document.createElement('div');
+        n.textContent = '已更新到最新版本';
+        n.style.cssText = 'position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom,0px) + 18px);transform:translateX(-50%);background:#1d2a2e;color:#fff;padding:8px 16px;border-radius:999px;font-size:14px;z-index:99;box-shadow:0 4px 14px rgba(0,0,0,.2)';
+        document.body.appendChild(n); setTimeout(() => n.remove(), 2600);
+      }
+    } catch (e) {}
+  });
+}
+</script>
+</body>
+</html>
