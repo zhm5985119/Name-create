@@ -493,12 +493,31 @@
       if (!c.wx) { s += 0.4; notes.push(`「${c.c}」五行未定`); return; }
       const bu = bz.missing.includes(c.wx) ? `，补八字所缺之${c.wx}` : '';
       if (c.wx === bz.xi[0]) { s += 1; notes.push(`「${c.c}」属${c.wx}，为用神${bu}`); }
-      else if (c.wx === bz.xi[1]) { s += 0.85; notes.push(`「${c.c}」属${c.wx}，为喜神${bu}`); }
+      else if (c.wx === bz.xi[1]) { s += bu ? 0.85 : 0.75; notes.push(`「${c.c}」属${c.wx}，为喜神${bu}`); }
       else if (bz.th && bz.th.use && c.wx === bz.th.wx) { s += 0.85; notes.push(`「${c.c}」属${c.wx}，为调候用神${bu}`); }
       else if (bz.ji.includes(c.wx)) { notes.push(`「${c.c}」属${c.wx}，八字中已偏旺，为忌`); }
       else { s += 0.5; notes.push(`「${c.c}」属${c.wx}，不增不减，属中性`); }
     });
     return { score: s / given.length, notes };
+  }
+
+  /* 出生时令：名字里有字呼应出生的季节、时辰或节气，另加分（不同生日的名单因此拉开差别） */
+  const SL_SEASON = { 春: '春青萌柳桃杏樱棠莺燕苏芳菲茵芊卉蕾苒蓁葳绿暄', 夏: '夏荷莲菡萤栀茉槐蔚茂葵彤',
+    秋: '秋桂菊枫露澄爽朗雁穗实梧皎素泠稔', 冬: '冬雪霁梅松柏凛冰煦暖晞' };
+  const SL_TIME = { 晨: '晨曦晓旭昕晞朝熹', 昼: '阳昀晴煦昱晟曜', 暮: '夕霞晚岚彤', 夜: '星月辰萤霄汉' };
+  const ZHI_TIME = { 子: '夜', 丑: '夜', 寅: '晨', 卯: '晨', 辰: '晨', 巳: '昼', 午: '昼', 未: '昼', 申: '暮', 酉: '暮', 戌: '夜', 亥: '夜' };
+  const TIME_WORD = { 晨: '清晨', 昼: '白天', 暮: '傍晚', 夜: '夜里' };
+  function shiling(given, bz, note) {
+    if (!bz || !bz.pillars) return { adj: 0, notes: [] };
+    const season = SEASON[bz.pillars[1].zhi], time = bz.hourKnown ? ZHI_TIME[bz.pillars[3].zhi] : '';
+    const jq = (bz.jieqi || '').split('（')[0];
+    const notes = [], label = []; let adj = 0;
+    if (note && jq && note === jq) { adj += 3; notes.push(`节气名，正合出生的${jq}时节`); label.push('合' + jq); }
+    const sc = given.filter(c => SL_SEASON[season].includes(c.c));
+    if (sc.length) { adj += 2; notes.push(`「${sc.map(c => c.c).join('')}」应${season}季出生的时令`); label.push(`应${season}令`); }
+    const tc = time ? given.filter(c => SL_TIME[time].includes(c.c)) : [];
+    if (tc.length) { adj += 2; notes.push(`「${tc.map(c => c.c).join('')}」应${TIME_WORD[time]}出生`); label.push(`应${TIME_WORD[time]}`); }
+    return { adj: Math.min(4, adj), notes, label: label.join('·'), season, time };
   }
 
   /* ================= 七、寓意与风格 ================= */
@@ -748,6 +767,7 @@
       else if (kind === '相连') coh = 0.45;
       else if (shareTag) coh = 0.5;
       else coh = 0.35;
+      if (ctx.curated) coh = Math.max(coh, 0.6);
       r.coherence = coh;
       if (coh < 0.5) { r.yuyi.score = Math.max(0, r.yuyi.score - 0.25); r.yuyi.notes.push('两个字意思上关联不大，组合感偏弱'); }
       else if (coh < 0.6) r.yuyi.score = Math.max(0, r.yuyi.score - 0.1);
@@ -768,11 +788,13 @@
       if (!r.yuyi.hit) r.yuyi.notes.push('不含所选寓意的字');
     }
     r.tagAdj = tagAdj;
+    const sl = ctx.shiling === false ? { adj: 0, notes: [] } : shiling(given, ctx.bazi, ctx.pickNote);
+    r.shiling = sl; if (sl.notes.length) r.yuyi.notes.push(...sl.notes);
     const w = ctx.weights || DEFAULT_WEIGHTS;
     const wsum = Object.values(w).reduce((a, b) => a + b, 0) || 1;
     let total = 0;
     for (const k of Object.keys(DEFAULT_WEIGHTS)) total += (w[k] || 0) * r[k].score;
-    total = total / wsum * 100 + r.fengge.delta + tagAdj;
+    total = total / wsum * 100 + r.fengge.delta + tagAdj + sl.adj;
     total -= r.bikeng.warn.length * 15 + r.bikeng.hot * 3;
     r.total = Math.max(0, Math.min(100, Math.round(total)));
     r.grade = grade(r.total);
@@ -887,7 +909,8 @@
       if (xi && opt.wxRule === 'balanced' && (!given.some(c => xi.includes(c.wx)) || given.some(c => ji.includes(c.wx)))) return;
       if (opt.fixed && (len === 1 ? given[0].c !== opt.fixed : given[opt.fixedPos === 2 ? 1 : 0].c !== opt.fixed && !(opt.fixedPos === 0 && given.some(c => c.c === opt.fixed)))) return;
       const src = poemSources(poems, name);
-      const r = evaluate(sur, given, ctx, src);
+      // 精选名单是人工挑过的组合，不再按“两字关联度”扣分（那条规则是给程序拼字用的）
+      const r = evaluate(sur, given, Object.assign({}, ctx, { pickNote: hour, curated: true }), src);
       if (r.bikeng.warn.length && !r.bikeng.dup.hot) return;
       out.push({ name, given, src, r, pick: { src: data.pickSrc[srcId], hour, mine: !!mine }, rank: i });
     });

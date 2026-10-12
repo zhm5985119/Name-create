@@ -386,6 +386,7 @@ td.big { font-family: var(--serif); font-size: 22px; font-weight: 700; }
           <option value="off">不限：五格只参与评分</option>
         </select>
         <label class="check"><input type="checkbox" id="noTrend" checked> 排除网红字（梓、涵、汐、诺、萱等）</label>
+        <label class="check"><input type="checkbox" id="shiling" checked> 优先呼应出生时令（季节、时辰、节气）</label>
         <label class="check"><input type="checkbox" id="onlyPoem"> 只看有典籍出处的名字</label>
       </div>
       <div class="field">
@@ -481,9 +482,11 @@ td.big { font-family: var(--serif); font-size: 22px; font-weight: 700; }
           <h3>重名参考</h3>
           <p>用公开的 120 万人名语料统计每个名字（不含姓）有多少人在用，分为罕见（不足 3 人）、少见（3–4 人）、较少（5–19 人）、常见（20–59 人）、很常见（60 人以上）；公安部《全国姓名报告》（2019–2021 年）和 2024、2025 年多地公安部门公布的新生儿热门名单标为“爆款”；“锦”等 2025 年多地最热门的字会单独提示。这份语料覆盖各年龄段、偏重成年人，所以近年流行的名字要同时看“爆款”和网红字提示。常见、很常见、爆款会在避坑项里少量扣分。珩、洵、澈、熠、璟等近两年在新生儿中热度上升的字只作提示。</p>
           <h3>候选名字怎么分组</h3>
-          <p>按名字的来历分组，每个名字只出现在一组：两个字在同一句经典里连用的归“典故名”；两个字分别出自不同经典原句、又能合成一个意思的归“字字有出处”；其余人工挑选和新拟的名字归“精选好名”；程序按规则拼出来的放在最后的“规则拼字”（默认折叠）。在线版另有“AI 起名”。各组上方可以“按意象看”：草木、山水、日月光华（日月星辰、天气时令、光彩）、玉石、书卷（诗书、乐器、文章）、温婉安宁、品德志向，按两个字的偏旁和字义归类，一个名字可以同属几类。</p>
+          <p>有出生日期时，最上面先列“最合这个生辰”：从精选好名、典故名和高分的字字有出处里，只按和出生有关的几项排序——用字合八字用神（用神优先于喜神）、补八字所缺的五行、呼应出生的季节和时辰、合生肖。换生日、换时辰，这一组变化最大。下面按名字的来历分组，每个名字只出现在一组：两个字在同一句经典里连用的归“典故名”；两个字分别出自不同经典原句、又能合成一个意思的归“字字有出处”；其余人工挑选和新拟的名字归“精选好名”；程序按规则拼出来的放在最后的“规则拼字”（默认折叠）。在线版另有“AI 起名”。各组上方可以“按意象看”：草木、山水、日月光华（日月星辰、天气时令、光彩）、玉石、书卷（诗书、乐器、文章）、温婉安宁、品德志向，按两个字的偏旁和字义归类，一个名字可以同属几类。</p>
           <h3>精选好名</h3>
           <p>人工挑选的约 860 个现代好名（包括时辰名、诗经名、二十四节气名、星宿雅称、民国感名字、温润如玉的男孩名和诗经单字名），以及照同样风格新拟的约 230 个名字。按性别、笔画要求、用字五行和排除字筛选后打分；网红字不排除，但会扣分并提示，重名多的会标出。选单字名时这里只列单字名。部分名单有“某时辰出生宜用某字”的说法，与八字喜用常有冲突，本工具不据此加分。</p>
+          <h3>为什么换了生日，下面的名单变化不大</h3>
+          <p>生日只通过八字五行（20 分）和生肖（5 分）影响总分，寓意、音律、出处、字形占大头，这是按“更看重名字本身好听”设的。而喜用神只有五行里的两个，很多相近的生日喜用相同：比如 2026 年下半年出生的孩子，大多是丙午年火旺，喜用多为水、木，筛出来的字和排序自然接近。姓也一样，笔画和声调相同的姓（如吴、何）五格、音律一样，名单也接近。所以加了“最合这个生辰”一组，并给呼应出生时令的名字加分：名字里有字应出生的季节（如秋生用澄、桂、梧、皎）或时辰（如清晨用晨、曦、晓）各加 2 分，节气名正合出生节气加 3 分，合计最多 4 分；可在左侧取消“优先呼应出生时令”。想让八字影响更大，也可以在“评分权重”里调高五行补益。</p>
           <h3>期望寓意</h3>
           <p>可多选 19 类：品德、聪慧、美好、文雅、光明、自然、志向、安宁、福乐、坚毅，以及新增的仁善、诚信、健康、才艺、灵动、豁达、自在、高洁、温润。每个字按字义人工标注所属类别（如“康、颐、椿、松”属健康，“琴、笙、墨、砚”属才艺，“瑾、瑜、珩、润”属温润）。选了寓意后，名字里有字契合就在寓意分之外再直接加分：选一类时契合加 5 分；选两类以上时契合其中一类加 2 分、两类加 5 分；一类都不契合的名字寓意分会低一些。不选则所有名字按同一标准打分。</p>
           <h3>上户口用字</h3>
@@ -660,7 +663,7 @@ td.big { font-family: var(--serif); font-size: 22px; font-weight: 700; }
     const liked = $('#liked').value.split(/[\s,，、;；]+/).map(x => x.trim()).filter(x => x.length >= 2 && x.length <= 4)
       .map(x => { const given = x.length === 2 ? x : splitName(x)[1]; return [...given].map(charObj).filter(Boolean); })
       .filter(a => a.length);
-    return { surname: sur, female, bazi, tags, style: segValue('style'), liked, likedText: $('#liked').value.trim(), weights: Object.assign({}, weights), taste: store.get('taste', null) };
+    return { surname: sur, female, bazi, tags, style: segValue('style'), liked, likedText: $('#liked').value.trim(), weights: Object.assign({}, weights), taste: store.get('taste', null), shiling: $('#shiling').checked };
   }
 
   /* ---------- 公共片段 ---------- */
@@ -1060,7 +1063,7 @@ td.big { font-family: var(--serif); font-size: 22px; font-weight: 700; }
         <div class="seal">${it.r.total}<small>${it.r.grade.g}等</small></div></div>
       ${moveTag(it)}
       <div class="meta-line">${it.given.map(c => `<span class="tag ${xi.includes(c.wx) ? 'hit' : ''}">${c.c} ${wxs(c.wx)} ${c.kx}画</span>`).join('')}</div>
-      <div class="meta-line"><span class="tag">人格${g.人格.n}<span class="lv-${g.人格.level}">${g.人格.level}</span></span><span class="tag">三才<span class="lv-${it.r.wuge.sancai.level}">${it.r.wuge.sancai.level}</span></span><span class="tag">综合 <span class="lv-${it.r.verdict}">${it.r.verdict}</span></span>${dupTag(it.r)}${it.r.shengxiao.bad ? `<span class="tag">生肖<span class="lv-凶">忌</span></span>` : it.r.shengxiao.good ? `<span class="tag hit">生肖宜</span>` : ''}</div>
+      <div class="meta-line"><span class="tag">人格${g.人格.n}<span class="lv-${g.人格.level}">${g.人格.level}</span></span><span class="tag">三才<span class="lv-${it.r.wuge.sancai.level}">${it.r.wuge.sancai.level}</span></span><span class="tag">综合 <span class="lv-${it.r.verdict}">${it.r.verdict}</span></span>${dupTag(it.r)}${it.r.shengxiao.bad ? `<span class="tag">生肖<span class="lv-凶">忌</span></span>` : it.r.shengxiao.good ? `<span class="tag hit">生肖宜</span>` : ''}${it.r.shiling && it.r.shiling.label ? `<span class="tag hit">${esc(it.r.shiling.label)}</span>` : ''}</div>
       ${src}
       ${aiLine}
       <div class="acts">
@@ -1081,13 +1084,16 @@ td.big { font-family: var(--serif); font-size: 22px; font-weight: 700; }
       <button class="chip" type="button" data-th="" aria-pressed="${!theme}">全部</button>
       ${keys.map(k => `<button class="chip" type="button" data-th="${k}" aria-pressed="${theme === k}">${E.THEMES[k]} <small>${n[k]}</small></button>`).join('')}</div></div>`;
   }
-  function visible(list, keepBad) {
+  function visible(list, keepBad, byFit) {
     const out = list.filter(it => {
       if (hidden.has(state.ctx.surname.s + it.name)) return false;
       if (theme && !themeOf(it).has(theme)) return false;
       return !(state.comboFilter && it.given.map(c => c.kx).join('-') !== state.comboFilter);
     });
-    return out.sort((a, b) => b.r.total - a.r.total || a.rank - b.rank);
+    if (!byFit) return out.sort((a, b) => b.r.total - a.r.total || a.rank - b.rank);
+    out.sort((a, b) => b.fit - a.fit || b.r.total - a.r.total);
+    const used = {}; // 同一个字最多出现两次，免得一组全是同一个字
+    return out.filter(it => { if (it.given.some(c => (used[c.c] || 0) >= 2)) return false; it.given.forEach(c => { used[c.c] = (used[c.c] || 0) + 1; }); return true; });
   }
   let showOther = false;
   function stepNames() {
@@ -1105,6 +1111,7 @@ td.big { font-family: var(--serif); font-size: 22px; font-weight: 700; }
       ${aiBar()}
       ${themeBar()}
       ${state.comboFilter ? `<div class="filter-note"><span class="tag">只看笔画 ${state.comboFilter.replace('-', ' + ')}</span><button class="icon-btn" data-clear="1" type="button">显示全部</button></div>` : ''}
+      ${state.fit && state.fit.length ? block('fit', '最合这个生辰', '从下面各组里挑出和出生最相关的：用字合八字用神、补所缺五行、呼应出生的季节和时辰、合生肖，且总分过线。换生日，这一组变化最大', visible(state.fit, false, true), state.shown.fit) + '<div style="height:18px"></div>' : ''}
       ${gen.length ? block('aiGen', 'AI 起名', 'Claude 按所选风格组名，程序已核对笔画和五行并完整打分', gen, state.shown.aiGen) + '<div style="height:18px"></div>' : ''}
       ${state.pickTotal ? block('picks', '精选好名', `${state.len === 1 ? '人工挑选的单字名' : '人工挑选和同风格新拟的现代好名，好听好认'}，按性别、笔画和五行筛选后 ${pk.length} 个；出自经典的已归到典故名、字字有出处。网红字不排除，但会扣分提示`, pk, state.shown.picks) + '<div style="height:18px"></div>' : ''}
       ${block('classic', '典故名', '两个字在同一句经典原文里连用（或化用原句），寓意完整', cls, state.shown.classic)}
@@ -1172,10 +1179,24 @@ td.big { font-family: var(--serif); font-size: 22px; font-weight: 700; }
         each: merged.filter(it => kindOf(it) === '各取'),
         other: results.filter(it => !isClassic(it) && kindOf(it) !== '各取' && !pickSet.has(it.name)),
         picks, pickTotal: (DATA.picks || []).filter(p => [...p[0]].length === len).length,
-        shown: { classic: 12, other: 12, aiGen: 12, picks: 12, each: 12 }, prev, updatedAt: auto ? new Date() : null,
+        shown: { classic: 12, other: 12, aiGen: 12, picks: 12, each: 12, fit: 12 }, prev, updatedAt: auto ? new Date() : null,
         opt,
       };
       state.aiGen = loadAiGen();
+      // 最合这个生辰：只看和出生有关的几项（用神喜神、补缺、出生时令、生肖），在质量过线的名字里排序
+      state.fit = [];
+      if (ctx.bazi) {
+        const bz = ctx.bazi;
+        // 以人工挑过的精选好名、典故名为主；“字字有出处”是程序配对的，只取高分的
+        const seen = new Set();
+        state.fit = [...(state.aiGen || []), ...state.picks, ...state.classic, ...state.each.filter(it => it.r.total >= 85)]
+          .filter(it => !it.r.bikeng.warn.length && it.r.total >= 65)
+          .filter(it => { const k = [...it.name].sort().join(''); if (seen.has(k)) return false; seen.add(k); return true; });
+        state.fit.forEach(it => {
+          const bu = it.given.filter(c => bz.missing.includes(c.wx) && bz.xi.includes(c.wx)).length;
+          it.fit = it.r.wuxing.score * 2 + bu * 0.4 + (it.r.shiling ? it.r.shiling.adj : 0) * 0.25 + it.r.shengxiao.score * 0.5;
+        });
+      }
       state.classic.forEach((it, i) => { it.rank = i; });
       state.other.forEach((it, i) => { it.rank = i; });
       state.picks.forEach((it, i) => { it.rank = i; });
@@ -1218,7 +1239,7 @@ td.big { font-family: var(--serif); font-size: 22px; font-weight: 700; }
       ${writingSection(sur, given)}
       ${aiSection(full)}
       <div class="sec"><h3>分项得分</h3><div class="scorebars">${Object.keys(LABEL).map(k => scoreBar(k, r[k].score)).join('')}</div>
-        ${r.fengge.delta || r.tagAdj || deduct ? `<p class="hint" style="margin-top:8px">${r.tagAdj ? `寓意契合 ${r.tagAdj > 0 ? '+' : ''}${r.tagAdj} 分。` : ''}${r.fengge.delta ? `风格调整 ${r.fengge.delta > 0 ? '+' : ''}${r.fengge.delta} 分。` : ''}${deduct ? `避坑扣 ${deduct} 分。` : ''}</p>` : ''}</div>
+        ${r.fengge.delta || r.tagAdj || (r.shiling && r.shiling.adj) || deduct ? `<p class="hint" style="margin-top:8px">${r.shiling && r.shiling.adj ? `呼应时令 +${r.shiling.adj} 分。` : ''}${r.tagAdj ? `寓意契合 ${r.tagAdj > 0 ? '+' : ''}${r.tagAdj} 分。` : ''}${r.fengge.delta ? `风格调整 ${r.fengge.delta > 0 ? '+' : ''}${r.fengge.delta} 分。` : ''}${deduct ? `避坑扣 ${deduct} 分。` : ''}</p>` : ''}</div>
       <div class="sec"><h3>字义与笔画<span class="s">笔画：简体 / 康熙</span></h3><div class="tbl-wrap"><table>
         <tr><th>字</th><th>拼音</th><th>五行</th><th>笔画</th><th>释义</th></tr>${charRows}</table></div>
         ${[...r.yuyi.notes, ...r.fengge.notes].length ? `<p class="hint" style="margin-top:8px">${esc([...r.yuyi.notes, ...r.fengge.notes].join('；'))}</p>` : ''}</div>
