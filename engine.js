@@ -410,6 +410,8 @@
     'mo gui', 'sha shou', 'mao ce', 'bian bian', 'la shi', 'ma fan', 'xia zi', 'yao jing', 'tou ke', 'chou nv', 'chao fan', 'fei pang',
     'zhang lang', 'zhang ai', 'zhang zui', 'zhang shi', 'ji ji', 'shi zhen xiang', 'du zi teng', 'mei you', 'wu yong', 'bu hao', 'tai jian', 'jie ba']);
   // 姓和名连读成一个现成的词（单字名最容易出现），意思不好或容易被打趣
+  // 和古今名人同姓同名：容易被拿来比较或调侃
+  const FAMOUS = new Set(('王安石 李白 杜甫 苏轼 苏辙 苏洵 白居易 王维 孟浩然 李商隐 杜牧 韩愈 柳宗元 欧阳修 曾巩 王勃 骆宾王 陈子昂 张九龄 王之涣 王昌龄 高适 岑参 刘禹锡 元稹 李贺 贾岛 温庭筠 李煜 柳永 晏殊 范仲淹 司马光 黄庭坚 秦观 陆游 辛弃疾 李清照 朱熹 文天祥 岳飞 屈原 宋玉 司马迁 班固 曹操 曹植 曹丕 诸葛亮 陶渊明 王羲之 王献之 谢灵运 谢安 嵇康 阮籍 李斯 孔丘 孟轲 庄周 韩非 墨翟 荀况 王阳明 王守仁 张居正 海瑞 于谦 戚继光 郑和 朱元璋 朱棣 朱允炆 曹雪芹 吴承恩 罗贯中 施耐庵 蒲松龄 纳兰性德 郑板桥 郑燮 袁枚 龚自珍 林则徐 曾国藩 左宗棠 李鸿章 张之洞 康有为 梁启超 谭嗣同 孙中山 孙文 鲁迅 周树人 胡适 闻一多 朱自清 徐志摩 林徽因 梁思成 谢冰心 巴金 老舍 茅盾 沈从文 钱钟书 杨绛 季羡林 王国维 陈寅恪 蔡元培 李大钊 陈独秀 毛泽东 周恩来 朱德 邓小平 刘少奇 齐白石 徐悲鸿 张大千 吴冠中 余光中 金庸 琼瑶 三毛 李小龙 成龙 刘德华 周杰伦 王菲 张学友 郭沫若 刘半农 俞平伯 赵元任 梁实秋 张爱玲 萧红 丁玲 艾青 舒婷 顾城 海子 席慕蓉 汪曾祺 贾平凹 莫言 余华 路遥 韩寒 杨振宁 李政道 钱学森 邓稼先 袁隆平 屠呦呦 华罗庚 陈景润 姚明 刘翔 李娜 马云 马化腾 雷军 张艺谋 卓文君 王昭君 蔡文姬 谢道韫 薛涛 上官婉儿 武则天 杨玉环 西施 貂蝉 花木兰 嬴政 刘邦 项羽 韩信 张良 萧何 李世民 赵匡胤 李广 霍去病 卫青 关羽 张飞 赵云 刘备 孙权 周瑜 司马懿 苏武 张骞 班超 祖冲之 张衡 李时珍 沈括 毕昇 蔡伦 宋应星 徐光启 司马相如 苏秦 管仲 范蠡 伍子胥 孙武 白起 李牧 王翦 蒙恬 魏征 狄仁杰 包拯 寇准 王羲 吴道子 顾恺之 唐寅 唐伯虎 文征明 祝枝山 徐渭 八大山人 王冕 黄公望 倪瓒 李叔同 弘一 丰子恺 朱光潜 冯友兰 熊十力 梁漱溟 钱穆 叶圣陶 夏丏尊 郁达夫 冯至 卞之琳 戴望舒 穆旦 北岛 徐悲 林语堂 许地山 萧乾 傅雷 傅抱石 潘天寿 李可染 黄宾虹').split(' '));
   const BAD_WORD = new Set(('张扬 张狂 张罗 张望 张嘴 张口 张贴 张皇 张开 陈旧 陈腐 陈列 陈词 陈年 黄昏 黄牛 黄泉 黄色 黄瓜 黄毛 周末 周折 孙子 ' +
     '马虎 马桶 马屁 马路 马甲 马仔 马脚 胡闹 胡说 胡扯 胡乱 胡来 胡须 胡同 胡椒 胡子 何必 何苦 何况 高傲 高潮 高压 高利 谢绝 谢顶 谢幕 谢罪 唐突 ' +
     '田鼠 余孽 余毒 杜绝 杜撰 任性 任凭 石头 石灰 付出 白痴 白眼 白搭 白费 白骨 白菜 白吃 白干 孟浪 熊包 熊样 毛病 毛躁 毛糙 毛贼 毛衣 ' +
@@ -458,6 +460,7 @@
     const full = all.map(c => c.c).join(''), sl = sur.length;
     const word = [full.slice(sl - 1, sl + 1), full.slice(sl - 1, sl + 2), full].find(w => BAD_WORD.has(w));
     if (word) warn.push(`姓和名连读成「${word}」，容易被打趣`);
+    if (FAMOUS.has(full)) warn.push(`和名人「${full}」同姓同名，容易被拿来比较或调侃`);
     const abbr = all.map(c => split(c.py).p[0].toUpperCase()).join('');
     BAD_ABBR.forEach(b => { if (abbr.includes(b)) warn.push(`拼音缩写 ${abbr} 含「${b}」，容易被调侃`); });
     given.forEach(c => { if (c.poly && c.poly.length > 1) info.push(`「${c.c}」是多音字（${c.poly.join(' / ')}），别人可能读错`); });
@@ -549,7 +552,7 @@
   function yuyi(given, ctx) {
     let s = 0.6; const notes = [];
     const gen = given.filter(c => GENERIC.has(c.c)).length;
-    if (given.length === 2) s -= gen === 2 ? 0.3 : gen === 1 ? 0.1 : 0;
+    if (given.length === 2 && ctx.style !== 'jian') s -= gen === 2 ? 0.3 : gen === 1 ? 0.1 : 0; // 简约风格本来就用常见字，不扣
     const want = ctx.tags || [];
     const hit = new Set();
     given.forEach(c => (c.tags || '').split('').forEach(t => { if (want.includes(t)) hit.add(t); }));
@@ -570,6 +573,7 @@
     qing: { trend: 6, floral2: 6, inner: 0, stuffy: 5, verbImage: 5, label: '清新自然' },
     duan: { trend: 6, floral2: 8, inner: 2, label: '端庄大气' },
     shi: { trend: 2, floral2: 3, inner: 1, label: '古典诗意' },
+    jian: { trend: 8, floral2: 8, inner: 1, simple: true, label: '简约大气' },
     any: { trend: 0, floral2: 0, inner: 0, label: '不限' },
   };
   function fengge(given, ctx) {
@@ -600,6 +604,17 @@
       d -= old.length * st.stuffy + (given.length === 2 && old.length === 2 ? 4 : 0);
       if (old.length) notes.push(`「${old.map(c => c.c).join('、')}」说教味或年代感较重，听起来偏古板`);
       if (given.length === 2 && VERB.has(given[0].c) && IMAGE.has(given[1].c) && given[0].c !== given[1].c) { d += st.verbImage; notes.push('动词加自然意象的结构，灵动有画面感'); }
+    }
+    if (st.simple) { // 简约大气：笔画少、用字常见、不花哨
+      const n = given.reduce((a, c) => a + (c.stroke || 10), 0);
+      const plus = given.length === 2 ? (n <= 10 ? 6 : n <= 14 ? 4 : n <= 18 ? 2 : n > 24 ? -3 : 0) : (n <= 5 ? 4 : n <= 8 ? 2 : n > 14 ? -2 : 0);
+      d += plus;
+      if (plus > 0) notes.push(`笔画少（共 ${n} 画），简洁大气，好写好记`);
+      else if (plus < 0) notes.push(`笔画偏多（共 ${n} 画），不够简洁`);
+      const rare = given.filter(c => c.tgh && c.tgh !== 1);
+      if (rare.length) { d -= rare.length * 3; notes.push(`「${rare.map(c => c.c).join('、')}」不是常用字，和简约的路子不太合`); }
+      const soft = given.filter(c => isFloral(c) || c.rad2 === 38);
+      if (soft.length) { d -= soft.length * 2; notes.push(`「${soft.map(c => c.c).join('、')}」偏柔美，大气感弱一些`); }
     }
     return { delta: d, notes };
   }
