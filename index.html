@@ -94,6 +94,7 @@ input[type=text], select.full { width: 100%; }
 .chip[aria-pressed="true"] { background: var(--celadon-soft); border-color: var(--celadon); color: var(--ink); }
 .theme-bar { display: flex; gap: 8px 10px; align-items: center; flex-wrap: wrap; margin: 4px 0 16px; }
 .theme-bar small { opacity: .6; font-size: 11px; }
+.src .cm { font-family: var(--sans); font-size: 11.5px; color: var(--ink-2); margin-left: 4px; }
 .check { display: flex; gap: 8px; align-items: center; font-size: 14px; cursor: pointer; }
 .check input { accent-color: var(--celadon); width: 16px; height: 16px; flex: none; }
 details.weights summary { cursor: pointer; font-size: 13px; color: var(--ink-2); }
@@ -482,7 +483,7 @@ td.big { font-family: var(--serif); font-size: 22px; font-weight: 700; }
           <h3>汉字的五行</h3>
           <p>统一按一条规则判定：先看康熙字典的部首（按繁体字形），部首五行公认的按部首定。木：木、艹、竹、禾、米、纟、麦、麻；火：火、灬、日、心、忄、赤；土：土、山、石、田、左阝；金：金、钅、王（玉）、刀、刂、戈、斤、言、讠；水：氵、水、冫、雨、鱼。部首不在其中的，按字义判定。详情页每个字的五行下方会注明依据。各家起名书对同一个字的五行常有分歧，比如“华”有人按读音定为水，本工具按繁体“華”的艹部定为木。</p>
           <h3>典籍出处</h3>
-          <p>语料包括诗经、楚辞、周易（易传）、尚书、礼记、论语、大学、中庸、孟子、老子、庄子、荀子、世说新语、古文观止、千家诗、唐诗三百首、宋词三百首，以及李白、杜甫、王维、苏轼、李清照、辛弃疾等五十余位名家的诗词，均为公有领域文本。出处分五档：“典故名”是人工整理并核对过原文的经典词语，共 333 个，分女孩、男孩、通用三类（如思齐、令仪、怀瑾、惠风、上善、文思），分数最高；“各取一字”是两个字分别出自不同原句，各有寓意（如“浅”取自楚辞“石濑兮浅浅”，“溪”取自千家诗“清溪流过碧山头”），分数次之；“成词”是在典籍中多次连用的两个字；“相连”和“同句”只是在同一句里出现，分数较低。字库里约 1150 个字都配了单字出处，每字最多三句，优先诗经楚辞、其次唐诗宋词和千家诗，议论性的经部子部句子只在诗文里找不到时才用；“各取一字”只在两个字能合成一个意思时成立（动词加意象、两个意象，或同属自然、美好、安宁、文雅、光明一类），并且只用典故名和精选好名里出现过的字以及意象字。含悲伤、战乱等意象的句子不参与取名。</p>
+          <p>语料分两批，均为公有领域文本。第一批（评分依据）：诗经、楚辞、周易（易传）、尚书、礼记、论语、大学、中庸、孟子、老子、庄子、荀子、世说新语、古文观止、千家诗、唐诗三百首、宋词三百首，以及李白、杜甫、王维、苏轼、李清照、辛弃疾等五十余位唐宋名家的诗词。第二批（补充出处）：昭明文选、史记、汉书、左传、战国策、国语、乐府诗集、文心雕龙、诗品、淮南子、吕氏春秋、列子，千字文、声律启蒙、笠翁对韵、幼学琼林，菜根谭、小窗幽记、幽梦影、围炉夜话、颜氏家训，元曲、花间集、南唐二主词、汉魏六朝诗，明代刘基、高启、于谦、唐寅、文徵明、杨慎、王守仁、袁宏道等，清代钱谦益、吴伟业、顾炎武、朱彝尊、纳兰性德、郑燮、袁枚、黄景仁、龚自珍、黄遵宪等，近代康有为、梁启超、王国维、苏曼殊等名家诗词。第二批只给已有的组合、典故名和单字补充出处，不新增“成词”，所以不会改变原来的评分口径。另外用《康熙字典》给字库里约 1270 个字配了释义和例证（取与这个字取名用意最相符的一义），在名字详情和“字字有出处”里显示。出处分五档：“典故名”是人工整理并核对过原文的经典词语，共 346 个，分女孩、男孩、通用三类（如思齐、令仪、怀瑾、惠风、上善、文思），分数最高；“各取一字”（字字有出处）是两个字分别出自不同原句，每个字都标出它的字义和康熙字典释义，再组合成名（如“浅”取自楚辞“石濑兮浅浅”，“溪”取自千家诗“清溪流过碧山头”），分数次之；“成词”是在典籍中多次连用的两个字；“相连”和“同句”只是在同一句里出现，分数较低。字库里约 1190 个字配了单字出处，每字最多三句，优先选原句里这个字用的正是取名那层意思的（如“宁”取“怀德维宁”的安宁义，而不是“宁可”），地名、人名、年号里的字不算；优先诗经楚辞，其次文选、唐诗宋词、乐府、明清诗词等诗文，议论性的经史子部句子只在诗文里找不到时才用；“各取一字”要求两个字能合成一个意思（动词加意象、两个意象，或同属自然、美好、安宁、文雅、光明、高洁、温润、灵动、自在、仁善、才艺一类），并且只用典故名和精选好名里出现过的字以及意象字。含悲伤、战乱等意象的句子不参与取名。</p>
           <h3>重名参考</h3>
           <p>用公开的 120 万人名语料统计每个名字（不含姓）有多少人在用，分为罕见（不足 3 人）、少见（3–4 人）、较少（5–19 人）、常见（20–59 人）、很常见（60 人以上）；公安部《全国姓名报告》（2019–2021 年）和 2024、2025 年多地公安部门公布的新生儿热门名单标为“爆款”；“锦”等 2025 年多地最热门的字会单独提示。这份语料覆盖各年龄段、偏重成年人，所以近年流行的名字要同时看“爆款”和网红字提示。常见、很常见、爆款会在避坑项里少量扣分。珩、洵、澈、熠、璟等近两年在新生儿中热度上升的字只作提示。</p>
           <h3>候选名字怎么分组</h3>
@@ -682,7 +683,23 @@ td.big { font-family: var(--serif); font-size: 22px; font-weight: 700; }
   const srcHL = (s, given) => highlight(s.text, s.ch ? [s.ch] : given.map(c => c.c));
   function srcCite(s) {
     const t = s.title.split('·').pop();
-    return [s.author, `《${['诗经', '楚辞', '论语', '大学', '中庸', '孟子', '周易', '尚书', '礼记', '老子', '庄子', '荀子', '世说新语'].includes(s.book) ? s.book + '·' + t : t}》`].filter(Boolean).join(' ');
+    return [s.author, `《${PREFIX_BOOKS.has(s.book) ? s.book + '·' + t : t}》`].filter(Boolean).join(' ');
+  }
+  const PREFIX_BOOKS = new Set(['诗经', '楚辞', '论语', '大学', '中庸', '孟子', '周易', '尚书', '礼记', '老子', '庄子', '荀子', '世说新语',
+    '文选', '史记', '汉书', '左传', '战国策', '国语', '乐府诗集', '文心雕龙', '诗品', '淮南子', '吕氏春秋', '列子', '千字文', '声律启蒙', '笠翁对韵', '幼学琼林',
+    '菜根谭', '小窗幽记', '幽梦影', '围炉夜话', '颜氏家训']);
+  // 康熙字典释义：取第一条释义，附一句例证（诗、书、易、礼等按全称写）
+  const KX_BOOK = { 诗: '诗经', 书: '尚书', 易: '周易', 礼: '礼记', 前汉: '汉书', 后汉: '后汉书' };
+  function kxLine(c) {
+    if (!c || !c.kxd) return '';
+    const d = c.kxd.split('；')[0];
+    let cite = '';
+    if (c.kxc) {
+      const [tag, text] = c.kxc, parts = tag.split('·');
+      const name = (KX_BOOK[parts[0]] || parts[0]) + (parts.length > 1 ? '·' + parts.slice(1).join('·') : '');
+      cite = `；例：${/·|经|传|记|子|书|赋|骚|辞|志|论语/.test(name) ? '《' + name + '》' : name}“${text}”`;
+    }
+    return `《康熙字典》：${d}${cite}`;
   }
 
   /* ---------- 一至三：八字、旺衰、喜用 ---------- */
@@ -1059,7 +1076,7 @@ td.big { font-family: var(--serif); font-size: 22px; font-weight: 700; }
     const g = it.r.wuge.ge;
     const s = it.src[0];
     const src = it.r.chuchu.kind === '各取'
-      ? it.r.chuchu.each.map(e => `<p class="src"><b>${esc(e.ch)}</b>　${srcHL(e)}<cite>${esc(e.book)} · ${esc(srcCite(e))}</cite></p>`).join('')
+      ? it.r.chuchu.each.map(e => `<p class="src"><b>${esc(e.ch)}</b>${(() => { const m = (DATA.byChar[e.ch] || {}).mean; return m ? `<span class="cm">${esc(m.split(/[，；]/)[0])}</span>` : ''; })()}　${srcHL(e)}<cite>${esc(e.book)} · ${esc(srcCite(e))}</cite></p>`).join('')
       : s ? `<p class="src">${highlight(s.text, it.given.map(c => c.c))}<cite>${KIND[it.r.chuchu.kind]} · ${esc(srcCite(s))}</cite></p>` : '<p class="src none">无典籍出处，按字义与五行组合</p>';
     const aiLine = it.aiMeaning ? `<div class="ai"><span class="aitag v-推荐">AI 起名</span>${esc(it.aiMeaning)}</div>` : '';
     return `<article class="card" data-name="${esc(it.name)}" tabindex="0">
@@ -1220,14 +1237,14 @@ td.big { font-family: var(--serif); font-size: 22px; font-weight: 700; }
     const full = sur.map(c => c.c).join('') + given.map(c => c.c).join('');
     const charRows = [...sur, ...given].map((c, i) => `<tr><td class="big">${c.c}</td><td>${c.py}</td><td>${i < sur.length ? '—' : `${wxs(c.wx)}<div class="hint">${esc(c.wxb || '')}</div>`}</td>
         <td class="num">${c.stroke} / ${c.kx}${c.trad && c.trad !== c.c ? `（${c.trad}）` : ''}</td>
-        <td>${i < sur.length ? '姓氏' : c.mean ? esc(c.mean) : '<span class="hint">字库未收录释义</span>'}</td></tr>`).join('');
+        <td>${i < sur.length ? '姓氏' : c.mean ? esc(c.mean) : '<span class="hint">字库未收录释义</span>'}${i >= sur.length && c.kxd ? `<div class="hint" style="margin-top:3px">${esc(kxLine(c))}</div>` : ''}</td></tr>`).join('');
     const ge = r.wuge.ge, sc = r.wuge.sancai;
     const geRows = Object.entries(ge).map(([k, v]) => `<tr><td>${k}</td><td>${esc(v.formula)}</td><td class="num"><b>${v.n}</b></td><td>${wxs(v.wx)}</td><td class="lv-${v.level}">${k === '天格' ? '<span class="hint">不论</span>' : v.level}</td></tr>`).join('');
     const geNotes = Object.entries(ge).map(([k, v]) => `<div><b>${k} ${v.n}</b>：${esc(v.meaning)}。数理「${esc(v.desc)}」，${k === '天格' ? '仅作参考' : `为<span class="lv-${v.level}">${v.level}</span>`}${v.note ? `（${esc(v.note)}）` : ''}。</div>`).join('');
  const kindNote = { 典故: '两字在经典原文中连用，是典故名', 化用: '化用经典原句', 成词: '两字在典籍中多次连用', 相连: '两字在原句中相连，但未必成词', 同句: '两字只是出现在同一句中，取字而非取词' }[r.chuchu.kind];
     const quoteHTML = (s, hl) => `<div class="quote">${highlight(s.text, hl)}<div class="hint">${esc([s.book, s.author, s.title].filter(Boolean).join(' · '))}</div></div>`;
     const quotes = r.chuchu.kind === '各取'
-      ? given.map(c => `<p style="margin:10px 0 4px"><b>「${esc(c.c)}」</b><span class="hint">　${esc(c.mean || '')}</span></p>${E.charSources(POEMS, c.c).map(q => quoteHTML(q, [c.c])).join('')}`).join('')
+      ? given.map(c => `<p style="margin:10px 0 4px"><b>「${esc(c.c)}」</b><span class="hint">　${esc(c.mean || '')}</span></p>${c.kxd ? `<p class="hint" style="margin:0 0 4px">${esc(kxLine(c))}</p>` : ''}${E.charSources(POEMS, c.c).map(q => quoteHTML(q, [c.c])).join('')}`).join('')
         + `<p class="hint" style="margin-top:8px">各取一字：两个字分别出自不同的典籍原句，各有寓意，合起来成名。第一句为主要出处，其余备选。${src && src.length ? `另外两字也同见于${esc(src[0].book)}「${esc(src[0].text)}」。` : ''}</p>`
       : src && src.length ? src.map(s => `<div class="quote">${highlight(s.text, given.map(c => c.c))}<div class="hint">${esc([s.book, s.author, s.title].filter(Boolean).join(' · '))}</div></div>`).join('') + `<p class="hint" style="margin-top:8px">${kindNote}。</p>` : '<p class="hint">这个组合在收录的典籍里没有找到出处。</p>';
     const bk = r.bikeng;

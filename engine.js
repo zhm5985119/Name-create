@@ -760,7 +760,8 @@
       const t0 = (given[0].tags || '').replace('X', ''), t1 = (given[1].tags || '').replace('X', '');
       // 只用“好字”：出现在典故名、精选好名里的字，或意象字、动词字；寓意标签只认自然、美好、安宁、文雅、光明几类
       const good = c => GOOD_CHARS.has(c.c) || IMAGE.has(c.c) || VERB.has(c.c);
-      const soft = t => 'ZMAYG'.includes(t);
+      // 寓意同类即可配对：原有的自然、美好、安宁、文雅、光明，加上新增的高洁、温润、灵动、自在、仁善、才艺
+      const soft = t => 'ZMAYGPWLCRT'.includes(t);
       const fit = good(given[0]) && good(given[1]) && ((VERB.has(given[0].c) && IMAGE.has(given[1].c)) || (IMAGE.has(given[0].c) && IMAGE.has(given[1].c)) || [...t0].some(t => soft(t) && t1.includes(t)));
       if (a.length && b.length && fit) {
         each = [a[0], b[0]];
@@ -861,7 +862,7 @@
     return best;
   }
   const RANK0 = new Set(['诗经', '楚辞', '周易', '尚书']);
-  const RANK1 = new Set(['论语', '大学', '中庸', '孟子', '礼记', '老子', '庄子', '荀子', '世说新语', '千家诗', '古文观止', '唐诗三百首', '宋词三百首']);
+  const RANK1 = new Set(['文选', '论语', '大学', '中庸', '孟子', '礼记', '老子', '庄子', '荀子', '世说新语', '千家诗', '古文观止', '唐诗三百首', '宋词三百首']);
   // 单字出处（“各取一字”）：每个字在诗经楚辞、唐诗宋词等里挑出的句子
   let POEMS_REF = null;
   const GOOD_CHARS = new Set();
